@@ -1,0 +1,43 @@
+# Kakuro sound assets.  Build:  ./x16snd project assets/kakuro/project.yaml [--target NAME]
+name: kakuro
+
+music:
+  - {source: music/menu.yaml, name: MENU}
+  - {source: music/game.yaml, name: GAME}
+
+sfx:                       # bundled into one bank per target; offsets go to the header
+  - {source: sfx/click.yaml}
+  - {source: sfx/select.yaml}
+  - {source: sfx/back.yaml}
+  - {source: sfx/page.yaml}
+  - {source: sfx/place.yaml, variants: [0, 2, 3, 7, 8, 12, 14, 15, 19]}   # PLACE1..9
+  - {source: sfx/verify_on.yaml}
+  - {source: sfx/verify_off.yaml}
+  - {source: sfx/wrong.yaml}
+  - {source: sfx/dialog.yaml}
+  - {source: sfx/solved.yaml}
+
+# Targets are named after the sound chip / format, not a machine or card:
+#   psg  VERA PSG (Commander X16, ZSMKit)       MENU.ZSM GAME.ZSM SFX.BIN sfx.h
+#   opl  OPL2 FM (AdLib, every Sound Blaster,   MENU.OPL GAME.OPL SFX.OPL sfx.h
+#        any OPL2/OPL3 compatible)
+#   gm   General MIDI (MPU-401 and compatibles) MENU.GMS GAME.GMS SFX.GMS sfx.h
+targets:
+  psg:
+    chip: psg
+    output: ../../build/kakuro/psg
+    # music keeps to voices 0-11; effects own 12-15 (ZSMKit priority 1)
+    reserve_sfx_voices: [12, 13, 14, 15]
+    sfx_bank: SFX.BIN      # raw blob, load into one RAM bank at $A000
+    address: 0xA000
+    header: sfx.h
+  opl:
+    chip: opl
+    output: ../../build/kakuro/opl
+    sfx_bank: SFX.OPL
+    header: sfx.h
+  gm:
+    chip: gm
+    output: ../../build/kakuro/gm
+    sfx_bank: SFX.GMS
+    header: sfx.h

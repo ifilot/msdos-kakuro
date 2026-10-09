@@ -1,0 +1,12 @@
+type: sfx
+title: place digit
+description: >
+  Soft koto plink when a digit is written into a cell. The project builds nine
+  variants transposed along the A hirajoshi scale so digits 1..9 sound A4 B4 C5
+  E5 F5 A5 B5 C6 E6.
+instruments: ../instruments.yaml
+parts:
+  fx: {instrument: pluck, voices: [15], opl: {voices: [8]}, level: 0.6}
+sections:
+  main:
+    fx: "A4/16t"

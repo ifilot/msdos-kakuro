@@ -30,3 +30,9 @@ and [graphics-controller write mode 0](https://www.osdever.net/FreeVGA/vga/graph
 CX16 image, checks the DAC and attribute palette, verifies the retained game mode and text-mode restoration
 and text-mode restoration, and rejects missing/truncated/invalid assets.
 The VGA pixel and palette dumps are in `build/start-test/`.
+
+## License
+
+This project's artwork is licensed under **GPL-3.0-only**, to the extent
+copyright applies. Source PNGs and conversion scripts are retained for editing.
+See [LICENSE](../../LICENSE) and [licensing and attribution](../../NOTICE.md).

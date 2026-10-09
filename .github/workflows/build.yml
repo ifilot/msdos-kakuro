@@ -1,0 +1,160 @@
+name: Build, test and release
+
+on:
+  push:
+    branches: ['**']
+    tags: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Borland build and DOS tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Capture build metadata
+        run: |
+          printf 'BUILD_COMMIT=%s\nSOURCE_DATE_EPOCH=%s\n' \
+            "$(git rev-parse HEAD)" "$(git show -s --format=%ct HEAD)" >> "$GITHUB_ENV"
+
+      - name: Build compiler and test image
+        run: docker build --tag kakuro-build buildenv
+
+      - name: Build, run all tests and package
+        # Rebuild generated headers/packs even when checkout timestamps match.
+        # Compilation uses a 386; the game tests use DOSBox's 8086 CPU.
+        run: |
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            --volume "$GITHUB_WORKSPACE:/workspace" \
+            --env BUILD_COMMIT --env SOURCE_DATE_EPOCH \
+            kakuro-build make -B \
+            verify-toolchain smoke \
+            test-video test-puzzle test-fonts test-start test-menu \
+            test-assets test-archive test-documents test-sound test-perf \
+            release
+
+      - name: Prepare changelog release notes
+        run: python3 tools/release_notes.py --output build/RELEASE-NOTES.md
+
+      - name: Upload DOS distribution
+        uses: actions/upload-artifact@v7
+        with:
+          name: kakuro-dos
+          path: |
+            build/KAKURO.ZIP
+            build/RELEASE-NOTES.md
+          if-no-files-found: error
+          overwrite: true
+
+      - name: Upload test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-diagnostics
+          path: |
+            build/**/COMPILE.TXT
+            build/**/EMULATOR.TXT
+            build/**/RESULT.TXT
+            build/**/CHECKS.TXT
+            build/**/PERFORM.TXT
+          if-no-files-found: ignore
+          overwrite: true
+
+  release:
+    name: Publish tagged release
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Download tested distribution
+        uses: actions/download-artifact@v8
+        with:
+          name: kakuro-dos
+          path: release
+
+      - name: Create release and attach DOS archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          # A rerun refreshes the asset without creating a duplicate release.
+          if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" release/KAKURO.ZIP --clobber
+          else
+            gh release create "$RELEASE_TAG" release/KAKURO.ZIP \
+              --verify-tag --title "Kakuro $RELEASE_TAG" \
+              --notes-file release/RELEASE-NOTES.md
+          fi
+
+
+  pages:
+    name: Build and deploy browser game
+    # Only a push to master builds the website. PRs, tags and manual runs do not.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Download tested DOS distribution
+        uses: actions/download-artifact@v8
+        with:
+          name: kakuro-dos
+          path: build
+      - name: Cache pinned emulator downloads
+        uses: actions/cache@v4
+        with:
+          path: build/site-cache
+          key: kakuro-wasm-8.5.2-v1
+      - name: Build static website
+        run: python3 tools/build_site.py
+      - name: Install browser test dependencies
+        run: |
+          npm install --prefix build/browser-tools --no-audit --no-fund playwright@1.64.0
+          build/browser-tools/node_modules/.bin/playwright install --with-deps chromium
+      - name: Test browser game
+        env:
+          NODE_PATH: ${{ github.workspace }}/build/browser-tools/node_modules
+        run: node tests/check_site.cjs
+      - name: Upload browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-diagnostics
+          path: build/site-check
+          if-no-files-found: ignore
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload static website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

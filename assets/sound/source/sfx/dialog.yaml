@@ -1,0 +1,9 @@
+type: sfx
+title: dialog
+description: Gentle questioning chime (E6 -> B6) when the 'quit puzzle?' dialog opens.
+instruments: ../instruments.yaml
+parts:
+  fx: {instrument: chime, voices: [14, 15], opl: {voices: [7, 8]}, ring: true, level: 0.8}
+sections:
+  main:
+    fx: "E6/5t B6/40t"

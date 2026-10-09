@@ -1,0 +1,9 @@
+type: sfx
+title: click
+description: Soft wooden tick for keyboard navigation in the menu (moving between cards).
+instruments: ../instruments.yaml
+parts:
+  fx: {instrument: tick, voices: [15], opl: {voices: [8]}, level: 0.8}
+sections:
+  main:
+    fx: "E6/6t"

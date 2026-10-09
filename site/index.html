@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f2efdc">
+<meta name="description" content="A Kakuro game for MS-DOS built with Borland C++ and planar VGA graphics. Explore the implementation, learn the rules, and run the DOS executable in your browser.">
+<title>MSDOS Kakuro · Gameplay and implementation</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<header class="topbar"><a class="wordmark" href="./"><span aria-hidden="true">✿</span> MSDOS KAKURO</a><nav aria-label="Page navigation"><a href="#rules">Rules</a><a href="#implementation">Implementation</a><a href="https://github.com/ifilot/msdos-kakuro">Source ↗</a></nav></header>
+<main>
+<section class="intro"><p class="eyebrow">RETROCOMPUTING · GAME DEVELOPMENT</p><h1>Kakuro for <em>MS-DOS.</em></h1><p class="lead">A number puzzle game written in Borland C++ 3.1, with a custom VGA graphics engine and 97 puzzles. This project explores game development for 8086/8088 systems: drawing in planar video memory, packing assets, and working with period sound hardware.</p><p class="intro-detail">The browser demo runs the DOS executable in a WebAssembly build of DOSBox. You can also download it for DOS, or explore the source and build tools.</p></section>
+<section class="play-section" aria-label="Play Kakuro">
+<div class="game-heading"><span><span class="live-dot" aria-hidden="true"></span><span id="status" role="status">Ready to start</span></span><span class="spec">640 × 480 · 16 COLORS · VGA</span></div>
+<div class="player" id="player"><div class="game-viewport"><div class="screen">
+<canvas id="screen" width="640" height="480" tabindex="0" aria-label="Kakuro game. Use Enter to begin, arrows to move and 1 through 9 to enter numbers." aria-describedby="controls"></canvas>
+<div class="cover" id="cover"><img src="courtyard.png" width="640" height="480" alt="Pixel art of a peaceful courtyard with cherry blossoms and a wooden gate."><div class="cover-action"><button class="primary" id="start">Run the DOS game <span aria-hidden="true">→</span></button><p>DOSBox / WebAssembly · Keyboard or touch controls</p></div></div>
+</div></div>
+<div class="touch-keys" aria-label="Game controls">
+<button data-key="257">Enter</button><button data-key="256">Esc</button><button data-key="265" aria-label="Up">↑</button><button data-key="266">PgUp</button><button data-key="267">PgDn</button><button data-key="290">Help</button>
+<button data-key="263" aria-label="Left">←</button><button data-key="264" aria-label="Down">↓</button><button data-key="262" aria-label="Right">→</button><button data-key="259">Clear</button><button data-key="291">About</button><button data-key="292">Audio</button>
+<button data-key="49">1</button><button data-key="50">2</button><button data-key="51">3</button><button data-key="52">4</button><button data-key="53">5</button><button data-key="54">6</button><button data-key="55">7</button><button data-key="56">8</button><button data-key="57">9</button>
+</div></div>
+<div class="toolbar"><p>Click the game to focus. <kbd>Enter</kbd> opens puzzle selection.</p><div class="tools"><button id="sound" aria-pressed="false" disabled>Sound off</button><button id="pause" aria-pressed="false" disabled>Pause</button><button id="fullscreen">Fullscreen</button><button id="restart" disabled>Restart</button></div></div>
+<p class="error" id="error" role="alert" hidden></p>
+</section>
+<section class="article-section" id="rules" aria-labelledby="rules-heading">
+<div class="section-heading"><p class="eyebrow">GAMEPLAY</p><h2 id="rules-heading">How Kakuro works</h2></div>
+<div class="reading-grid"><div>
+<p>Kakuro is a crossword of sums. Each white cell belongs to a horizontal run, a vertical run, or both. Dark cells separate the runs; diagonal clue cells give their target sums.</p>
+<ol class="rules-list"><li>Fill the answer cells with digits <strong>1 through 9</strong>.</li><li>The number in the <strong>upper right</strong> of a clue cell is the sum of the run to its right. The number in the <strong>lower left</strong> is the sum of the run below it.</li><li>A digit may appear <strong>only once within each run</strong>. It can appear again in a separate run.</li></ol>
+<p>Rose-brown answer cells contain fixed hints. They count toward the sums and cannot be edited. A puzzle is solved when every answer cell is filled and every run has the correct sum without repeated digits. The game accepts any solution that satisfies these rules.</p>
+</div><aside class="example-panel" aria-labelledby="example-heading"><h3 id="example-heading">An across run with sum 16</h3>
+<figure><div class="run-example" role="img" aria-label="Across clue 16 followed by answer cells 3, 5 and 8"><span class="example-clue"><span>16</span></span><span>3</span><span>5</span><span>8</span></div><figcaption>3 + 5 + 8 = 16, with no repeated digits.</figcaption></figure>
+<p>4 + 4 + 8 also adds up to 16, but is invalid because 4 appears twice.</p><p>Each crossing vertical run must satisfy its own clue too. Use those intersections to narrow down the possible digits.</p>
+</aside></div></section>
+<section class="article-section" id="controls" aria-labelledby="controls-heading"><div class="section-heading"><p class="eyebrow">USING THE GAME</p><h2 id="controls-heading">Controls and puzzle selection</h2></div>
+<div class="reading-grid"><div><table class="controls-table"><caption class="visually-hidden">Keyboard controls</caption><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+<tr><th scope="row">Arrow keys</th><td>Select a puzzle in the journal or move the board selector.</td></tr>
+<tr><th scope="row"><kbd>Enter</kbd></th><td>Open the journal, then start the selected puzzle.</td></tr>
+<tr><th scope="row"><kbd>PgUp</kbd> / <kbd>PgDn</kbd></th><td>Change pages in the puzzle journal.</td></tr>
+<tr><th scope="row"><kbd>1</kbd>–<kbd>9</kbd></th><td>Enter or replace a digit in an editable cell.</td></tr>
+<tr><th scope="row"><kbd>Backspace</kbd> / <kbd>Delete</kbd> / <kbd>0</kbd></th><td>Clear the selected answer cell.</td></tr>
+<tr><th scope="row"><kbd>Esc</kbd></th><td>Close a modal, return to the journal, or quit from the journal.</td></tr>
+<tr><th scope="row"><kbd>F1</kbd> / <kbd>F2</kbd></th><td>Open Help / About from the journal.</td></tr>
+<tr><th scope="row"><kbd>F3</kbd></th><td>Open audio settings in the journal or a puzzle.</td></tr>
+</tbody></table></div><div><h3>Choosing a puzzle</h3><p>The journal shows each puzzle's dimensions and difficulty. Filled cherry blossoms indicate its difficulty level. Played and solved markers record your activity during the current session.</p><h3>Session progress</h3><p>Returning to the journal and reopening the active puzzle preserves your entries. Selecting another puzzle starts a fresh board. Entries and status markers are held in memory; restarting or closing the browser game clears them.</p><p>Click the game before using the keyboard. On smaller screens, the buttons below the display provide touch controls. Browser sound starts muted; use <strong>Sound off</strong> to enable it.</p></div></div></section>
+<section class="article-section" id="implementation" aria-labelledby="implementation-heading"><div class="section-heading"><p class="eyebrow">TECHNICAL NOTES</p><h2 id="implementation-heading">Inside the DOS game</h2></div>
+<div class="technical-grid"><article><h3>C++ and the DOS toolchain</h3><p>The game is a 16-bit real-mode DOS program, compiled with Borland C++ 3.1 for the 8086/8088 instruction set. A Docker environment runs the compiler through DOSBox and provides repeatable builds and headless tests.</p><p>The architecture separates VGA drawing, puzzle data, game control, menus and sound. The browser runs the same executable distributed in the DOS archive.</p><a href="https://github.com/ifilot/msdos-kakuro/tree/master/src">Browse the C++ source ↗</a></article>
+<article><h3>Planar VGA graphics</h3><p>Standard VGA mode 12h provides 640 × 480 pixels and 16 colors. Pixels live in four bit planes. The graphics class writes directly to VGA memory and programs the palette through the DAC.</p><p>Bitmap fonts, compact clue digits and masked drawing routines keep the display readable. Selector movement redraws the affected borders; entering a digit redraws its cell. These choices reduce video-memory work on slower processors.</p><a href="https://github.com/ifilot/msdos-kakuro/blob/master/src/VGA.CPP">Read the VGA implementation ↗</a></article>
+<article><h3>Packed assets and puzzles</h3><p>Graphics are stored in <code>KAKURO.DAT</code>, puzzles in <code>PUZZLES.DAT</code>, and audio in <code>SOUND.DAT</code>. The DOS distribution contains these packs alongside the executable.</p><p>The indexed puzzle archive encodes cells in five bits and uses byte run-length encoding when it saves space. Graphics also use run-length encoding. Python tools generate the packs from the editable source assets.</p><a href="https://github.com/ifilot/msdos-kakuro/blob/master/tools/pack_puzzles.py">Read the puzzle packer ↗</a></article>
+<article><h3>Sound and browser emulation</h3><p>The DOS sound class supports AdLib, Sound Blaster FM and MPU-401 General MIDI. MPU-401 playback needs a connected General MIDI synthesizer.</p><p>This website uses a self-hosted js-dos / DOSBox WebAssembly runtime to emulate the CPU, VGA and FM sound. Browser audio supports AdLib and Sound Blaster FM. Emulator downloads are pinned and checksummed when the site is built.</p><a href="https://github.com/ifilot/msdos-kakuro/blob/master/tools/build_site.py">Read the website builder ↗</a></article></div>
+<p class="technical-footnote">Automated tests exercise the DOS program under DOSBox and the browser game in Chromium. GitHub Pages builds reuse the tested DOS archive and run only on pushes to master.</p></section>
+<section class="download"><div><p class="eyebrow">BUILD AND RUN</p><h2>Try it on DOS or build from source</h2><p>The DOS archive includes the executable, all 97 puzzles, graphics, audio and font notices. Extract the files together and run <code>KAKURO.EXE</code> on an 8086 or newer with a VGA card.</p><p>Use <code>make run</code> for the local DOSBox version, or <code>make site</code> to generate this website. Build instructions and tests are documented in the <a href="https://github.com/ifilot/msdos-kakuro/blob/master/docs/DEVELOPMENT.md">developer guide</a>.</p></div><a class="download-link" href="KAKURO.ZIP" download>Download DOS archive ↓</a></section>
+</main>
+<footer><p>Made by <a href="https://github.com/ifilot">Ivo Filot</a> · <span id="version">MSDOS Kakuro</span><br>Browser sound uses AdLib / Sound Blaster FM.</p><p>Powered by <a href="https://js-dos.com/">js-dos / DOSBox</a> WebAssembly.<br><a href="LICENSE.TXT">Game: GPLv3</a> · <a href="NOTICE.TXT">Attribution</a><br><a href="emulator/NOTICE.txt">Emulator licenses &amp; source</a> · <a href="PROFONT.TXT">ProFont license</a></p></footer>
+</body></html>

@@ -1,0 +1,174 @@
+# Kakuro instrument library. Top-level fields drive the VERA PSG; `opl:` is the OPL2 FM patch
+# (AdLib, Sound Blaster); `gm:` is the General MIDI program (0-based) or channel-10 drum note.
+# Time values are ticks (1/60 s). Levels are linear amplitude 0..1.
+# See docs/FORMAT.md for every field.
+
+instruments:
+
+  # --- melodic -------------------------------------------------------------
+
+  koto:
+    description: Plucked zither. Thin pulse whose width closes after the attack, like a string losing brightness.
+    wave: pulse
+    width: 14
+    width_env: {from: 30, to: 10, ticks: 12}
+    pitch_env: {from: 0.25, ticks: 3}     # tiny upward twang at the pluck
+    env: {a: 0, d: 50, s: 0, r: 10}
+    env_rate: 2
+    level: 0.75
+    range: [D3, E6]
+    opl:                      # nasal pluck: 3:1 modulator whose brightness decays faster than the tone
+      fb: 4
+      mod: {mult: 3, tl: 30, ar: 15, dr: 7, sl: 15, egt: false, rr: 7, ksl: 1}
+      car: {mult: 1, tl: 0, ar: 15, dr: 5, sl: 15, egt: false, rr: 7}
+    gm: {program: 107}          # Koto
+
+  shakuhachi:
+    description: Breathy bamboo flute. Triangle with soft attack, delayed vibrato; use ^ for the typical scoop.
+    wave: triangle
+    width: 63
+    env: {a: 7, d: 30, s: 0.8, r: 12}
+    env_rate: 2
+    vibrato: {depth: 0.16, period: 22, delay: 24, ramp: 30}
+    scoop: {from: -1.0, ticks: 8}
+    level: 1.0
+    gate: 0.94
+    range: [D4, A6]
+    opl:                      # soft sine flute; high feedback on a quiet modulator adds breath
+      fb: 6
+      mod: {mult: 1, tl: 40, ar: 7, dr: 3, sl: 2, rr: 6}
+      car: {mult: 1, tl: 0, ar: 6, dr: 2, sl: 1, rr: 6}
+    gm: {program: 77}           # Shakuhachi
+
+  sho:
+    description: Mouth-organ pad for quiet sustained clusters. Slow attack/release, slow pulse-width drift.
+    wave: pulse
+    width: 32
+    pwm: {min: 26, max: 40, period: 300}
+    env: {a: 40, d: 0, s: 1.0, r: 50}
+    env_rate: 3
+    level: 0.28
+    range: [E3, B5]
+    opl:                      # additive organ: half-sine octave + sine fundamental, slow swell, light tremolo
+      con: add
+      mod: {mult: 2, tl: 8, ar: 4, dr: 0, sl: 0, rr: 5, wave: 1, am: true}
+      car: {mult: 1, tl: 0, ar: 4, dr: 0, sl: 0, rr: 5}
+    gm: {program: 20}           # Reed Organ (GM has no sho)
+
+  chime:
+    description: Glassy wind chime (furin). High triangle with a long free decay.
+    wave: triangle
+    width: 63
+    env: {a: 0, d: 110, s: 0, r: 30}
+    env_rate: 3
+    level: 0.5
+    range: [E5, E7]
+    opl:                      # inharmonic 7:2 ratio bell; carrier mult 2 so transpose down an octave
+      transpose: -12
+      mod: {mult: 7, tl: 28, ar: 15, dr: 5, sl: 15, egt: false, rr: 5}
+      car: {mult: 2, tl: 0, ar: 15, dr: 4, sl: 15, egt: false, rr: 4}
+    gm: {program: 112}          # Tinkle Bell
+
+  bass:
+    description: Soft round bass. Triangle with gentle decay to a held level.
+    wave: triangle
+    width: 63
+    env: {a: 1, d: 40, s: 0.55, r: 14}
+    env_rate: 2
+    level: 0.95
+    range: [C2, C4]
+    opl:                      # round FM bass with a short bright onset
+      fb: 3
+      mod: {mult: 1, tl: 28, ar: 15, dr: 5, sl: 4, rr: 6}
+      car: {mult: 1, tl: 0, ar: 15, dr: 4, sl: 3, rr: 6}
+    gm: {program: 32}           # Acoustic Bass
+
+  # --- percussion ----------------------------------------------------------
+
+  woodblock:
+    description: Mokugyo-like wooden knock. Triangle with a fast downward pitch blip.
+    wave: triangle
+    width: 63
+    pitch_env: {from: 5, ticks: 2}
+    env: {a: 0, d: 9, s: 0, r: 0}
+    level: 0.55
+    opl:
+      mod: {mult: 3, tl: 18, ar: 15, dr: 10, sl: 15, egt: false, rr: 10}
+      car: {mult: 1, tl: 0, ar: 15, dr: 9, sl: 15, egt: false, rr: 9}
+    gm: {drum: 76}              # Hi Wood Block (channel 10)
+
+  shaker:
+    description: Soft high noise tick.
+    wave: noise
+    env: {a: 0, d: 5, s: 0, r: 0}
+    level: 0.18
+    opl:                      # no noise channel in melodic mode: full feedback at a high ratio is noisy
+      fb: 7
+      transpose: -36
+      mod: {mult: 15, tl: 0, ar: 15, dr: 10, sl: 15, egt: false, rr: 10}
+      car: {mult: 15, tl: 0, ar: 15, dr: 10, sl: 15, egt: false, rr: 10}
+    gm: {drum: 82}              # Shaker (channel 10)
+
+  # --- sound effects -------------------------------------------------------
+
+  tick:
+    description: Very short soft click for UI navigation.
+    wave: triangle
+    width: 63
+    pitch_env: {from: 7, ticks: 2}
+    env: {a: 0, d: 5, s: 0, r: 0}
+    level: 0.6
+    opl:
+      mod: {mult: 4, tl: 20, ar: 15, dr: 11, sl: 15, egt: false, rr: 11}
+      car: {mult: 1, tl: 0, ar: 15, dr: 11, sl: 15, egt: false, rr: 11}
+    gm: {program: 115}          # Woodblock (melodic)
+
+  pluck:
+    description: Bright short koto-ish pluck for UI confirmations.
+    wave: pulse
+    width: 18
+    width_env: {from: 34, to: 12, ticks: 8}
+    pitch_env: {from: 0.3, ticks: 2}
+    env: {a: 0, d: 22, s: 0, r: 4}
+    level: 0.8
+    opl:
+      fb: 5
+      mod: {mult: 3, tl: 26, ar: 15, dr: 8, sl: 15, egt: false, rr: 8, ksl: 1}
+      car: {mult: 1, tl: 0, ar: 15, dr: 6, sl: 15, egt: false, rr: 8}
+    gm: {program: 107}          # Koto
+
+  bell:
+    description: Clear bell for success cues.
+    wave: triangle
+    width: 63
+    env: {a: 0, d: 60, s: 0, r: 10}
+    level: 0.8
+    opl:                      # 5:2 ratio, clear tubular bell
+      transpose: -12
+      mod: {mult: 5, tl: 30, ar: 15, dr: 6, sl: 15, egt: false, rr: 6}
+      car: {mult: 2, tl: 0, ar: 15, dr: 5, sl: 15, egt: false, rr: 6}
+    gm: {program: 9}            # Glockenspiel
+
+  swish:
+    description: Noise sweep for page turns; glide the pitch to move the brightness.
+    wave: noise
+    env: {a: 6, d: 10, s: 0, r: 0}
+    level: 0.35
+    opl:                      # feedback noise with a soft attack; the glide moves its brightness
+      fb: 7
+      transpose: -24
+      mod: {mult: 15, tl: 0, ar: 10, dr: 8, sl: 15, egt: false, rr: 9}
+      car: {mult: 1, tl: 0, ar: 10, dr: 8, sl: 15, egt: false, rr: 9}
+    gm: {program: 121, transpose: -24}   # Breath Noise
+
+  thud:
+    description: Muted low knock for 'wrong' feedback.
+    wave: pulse
+    width: 40
+    pitch_env: {from: 3, ticks: 3}
+    env: {a: 0, d: 12, s: 0, r: 0}
+    level: 0.55
+    opl:
+      mod: {mult: 1, tl: 22, ar: 15, dr: 9, sl: 15, egt: false, rr: 9}
+      car: {mult: 0.5, tl: 0, ar: 15, dr: 8, sl: 15, egt: false, rr: 8}
+    gm: {program: 116, transpose: 12}    # Taiko Drum

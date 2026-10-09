@@ -32,3 +32,9 @@ the DAC; dismissal reloads the scene and restores the full palette.
 `make test-video` checks every background byte in emulated VGA memory and
 missing/truncated file handling. Puzzle tests check background rendering and
 restoration after modal dismissal. `SHA256SUMS` records the asset contents.
+
+## License
+
+This project's artwork is licensed under **GPL-3.0-only**, to the extent
+copyright applies. Source PNGs and conversion scripts are retained for editing.
+See [LICENSE](../../LICENSE) and [licensing and attribution](../../NOTICE.md).

@@ -1,0 +1,77 @@
+type: song
+title: Niwa (menu)
+description: >
+  Calm menu loop. D yo pentatonic (D E G A B) with quartal/sus harmony.
+  Shakuhachi melody with an echo, koto broken chords, sho pad, wind chimes.
+instruments: ../instruments.yaml
+tempo: 75            # quarter = 48 ticks, sixteenth = 12 ticks: exact grid
+meter: 4/4
+budget: 40960
+
+parts:
+  # opl: overrides for the AdLib target (9 FM channels: no room for the echo)
+  melody: {instrument: shakuhachi, voices: [0], level: 0.9,
+           echo: {voice: 1, delay: "8.", level: 0.28, pan: R},
+           opl: {echo: null}}
+  koto:   {instrument: koto, voices: [2, 3], ring: true, level: 0.75, opl: {voices: [1, 2]}}
+  pad:    {instrument: sho, voices: [4, 5, 6], opl: {voices: [3, 4, 5]}}
+  bass:   {instrument: bass, voices: [7], level: 0.9, opl: {voices: [6]}}
+  chime:  {instrument: chime, voices: [8], pan: L, opl: {voices: [7]}}
+  perc:   {voices: [9], level: 0.8, opl: {voices: [8]},
+           kit: {wb: {instrument: woodblock, note: E5}, sh: {instrument: shaker, note: C7}}}
+
+patterns:
+  # bars 1-6 of the A theme, shared by A and A2
+  melA: "| r/2 A4/4^ B4/4 | D5/2.^ B4/8 A4/8 | B4/2 -/8 A4/8 G4/4 | A4/1
+         | r/4 E5/4^ D5/4 E5/8 G5/8 | A5/2.^ G5/8 E5/8 |"
+  kotoA: "| D4/8 A4 E5 A4 D5 A4 E5/4 | G3/4 D4/8 A4/8 B4/4 A4/4
+          | B3/8 E4 A4 E4 B4 E4 A4/4 | A3/4 E4/8 A4/8 D5/4 E4/4
+          | D4/8 A4 E5 A4 D5 A4 E5/4 | G3/4 D4/8 B4/8 D5/4 B4/4 |"
+  padA: "| [D4 A4 E5]/1 | [G3 D4 A4]/1 | [B3 E4 A4]/1 | [A3 D4 E4]/1
+         | [D4 A4 E5]/1 | [G3 D4 B4]/1 |"
+  bassA: "| D3/2. A2/4 | G2/2. D3/4 | B2/2. E3/4 | A2/2. E2/4 | D3/2. A2/4 | G2/2. B2/4 |"
+  chimeA: "| r/1 | r/2. B6/4 | r/1 | r/1 | r/1 | r/4 E6/4 r/2 |"
+  percA: "| wb/4 r/2. | r/1 | wb/4 r/2. | r/1 | wb/4 r/2. | r/1 |"
+  shk: "wb/4 r/8 sh/8 r/8 sh/8 r/4"
+
+sections:
+  intro:
+    melody: "| r/1 | r/1 |"
+    koto:   "| D4/8 A4 E5 A4 D5 A4 E5/4 | G3/8 D4 A4 D4 G4 D4 A4/4 |"
+    pad:    "| [D4 A4 E5]/1 | [G3 D4 A4]/1 |"
+    bass:   "| D3/1 | G2/1 |"
+    chime:  "| r/2 A6/4 r/8 E6/8 | r/1 |"
+    perc:   "| r/1 | r/1 |"
+
+  A:
+    melody: "@melA | D5/4. E5/8 B4/2 | A4/2. r/4 |"
+    koto:   "@kotoA | E4/8 A4 B4 A4 E5 B4 A4/4 | A3/4 E4/8 A4/8 D5/4 r/4 |"
+    pad:    "@padA | [E4 A4 B4]/1 | [A3 D4 E4]/1 |"
+    bass:   "@bassA | E2/2. B2/4 | A2/2. A2/8 E2/8 |"
+    chime:  "@chimeA | r/1 | r/2 A6/8 E6/8 r/4 |"
+    perc:   "@percA | wb/4 r/2. | r/2. wb/8 wb/8 |"
+
+  B:
+    melody: "| B5/4^ A5/8 G5/8 E5/2 | D5/4. E5/8 A4/2 | B4/8 D5/8 E5/4 D5/8 B4/8 A4/4 | B4/1
+             | G5/4^ E5/8 D5/8 B4/4 D5/4 | E5/2. D5/8 E5/8 | G5/4 E5/4 D5/4. B4/8 | A4/2. r/4 |"
+    koto:   "| G4/8 D5 A5 D5 G5 D5 A5/4 | A4/4 E5/8 A5/8 D5/4 E5/4
+             | B4/8 E5 A5 E5 B5 E5 A5/4 | E5/4 B4/8 A4/8 E4/2
+             | G4/8 D5 A5 D5 G5 D5 A5/4 | A4/4 E5/8 A5/8 D5/4 E5/4
+             | B4/8 E5 A5 E5 B4 A4 G4/4 | A4/2 r/2 |"
+    pad:    "| [G3 D4 A4]/1 | [A3 D4 E4]/1 | [B3 E4 A4]/1 | [E4 A4 B4]/1
+             | [G3 D4 A4]/1 | [A3 D4 E4]/1 | [B3 E4 A4]/1 | [A3 D4 E4]/1 |"
+    bass:   "| G2/2. D3/4 | A2/2. E2/4 | B2/2. E3/4 | E2/2. B2/4
+             | G2/2. D3/4 | A2/2. E2/4 | B2/2 A2/4 G2/4 | A2/1 |"
+    chime:  "| r/2 D6/4 r/4 | r/1 | r/4 B6/4 r/2 | r/2. E6/4 | r/1 | r/2 A6/4 r/4 | r/1 | r/1 |"
+    perc:   "| @shk | @shk | @shk | @shk | @shk | @shk | @shk | wb/4 r/2. |"
+
+  A2:
+    melody: "@melA | D5/4. E5/8 B4/4 A4/4 | D5/1 |"
+    koto:   "@kotoA | E4/8 A4 B4 A4 E5 B4 A4/4 | D4/8 A4 E5 A4 D5/2 |"
+    pad:    "@padA | [E4 A4 B4]/1 | [D4 A4 E5]/1 |"
+    bass:   "@bassA | E2/2. B2/4 | D3/1 |"
+    chime:  "@chimeA | r/1 | r/4 D6/4 A6/4 r/4 |"
+    perc:   "@percA | wb/4 r/2. | r/1 |"
+
+arrangement: [intro, A, B, A2]
+loop: A

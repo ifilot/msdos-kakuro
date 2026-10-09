@@ -1,0 +1,9 @@
+type: sfx
+title: select
+description: Rising two-note koto pluck (A5 -> D6) for confirming a menu choice or opening a puzzle.
+instruments: ../instruments.yaml
+parts:
+  fx: {instrument: pluck, voices: [14, 15], opl: {voices: [7, 8]}, ring: true}
+sections:
+  main:
+    fx: "A5/5t D6/22t"

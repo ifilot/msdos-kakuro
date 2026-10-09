@@ -3,7 +3,7 @@ PYTHON ?= python3
 PUZZLE ?= 001
 GENERATED = src/DIGITDAT.H src/PROFDAT.H src/CATALOG.H src/DOCDATA.H assets/KAKURO.DAT assets/PUZZLES.DAT assets/SOUND.DAT src/SNDDATA.H
 
-.PHONY: build run fonts test-fonts test-video test-puzzle test-start test-menu test-perf test-assets release test-documents test-archive test-sound smoke verify-toolchain
+.PHONY: site build run fonts test-fonts test-video test-puzzle test-start test-menu test-perf test-assets release test-documents test-archive test-sound smoke verify-toolchain
 src/DIGITDAT.H: assets/fonts/digits.json tools/generate_fonts.py
 	$(PYTHON) tools/generate_fonts.py
 
@@ -78,3 +78,7 @@ assets/SOUND.DAT src/SNDDATA.H &: tools/pack_sound.py $(wildcard assets/sound/fm
 test-sound: $(GENERATED)
 	$(PYTHON) tests/test_sound.py
 	$(PYTHON) tools/dos.py test-sound
+
+# Build a self-hosted WebAssembly website from the same DOS distribution.
+site: release
+	$(PYTHON) tools/build_site.py

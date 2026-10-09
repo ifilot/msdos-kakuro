@@ -15,7 +15,9 @@ def main():
     destination.mkdir(parents=True)
     for name in ('KAKURO.EXE', 'KAKURO.DAT', 'PUZZLES.DAT', 'SOUND.DAT'):
         shutil.copyfile(source / name, destination / name)
-    for name, path in (('PROFONT.TXT', 'assets/fonts/PROFONT-LICENSE.txt'),
+    for name, path in (('LICENSE.TXT', 'LICENSE'),
+                       ('NOTICE.TXT', 'NOTICE.md'),
+                       ('PROFONT.TXT', 'assets/fonts/PROFONT-LICENSE.txt'),
                        ('FONTS.TXT', 'assets/fonts/internet/README.md')):
         shutil.copyfile(ROOT / path, destination / name)
     version = (ROOT / 'VERSION').read_text().strip()
@@ -23,6 +25,7 @@ def main():
         ('Version ' + version + '\r\n').encode('ascii') +
         b'KAKURO - 8086/8088 DOS, VGA 640x480, 16 colors\r\n'
         b'Source: https://github.com/ifilot/msdos-kakuro\r\n'
+        b'License: GNU GPL version 3; see LICENSE.TXT and NOTICE.TXT.\r\n'
         b'Run KAKURO from this directory. Keep KAKURO.DAT and PUZZLES.DAT beside it.\r\n'
         b'Enter opens the journal. Arrows select, PgUp/PgDn change pages.\r\n'
         b'F1 opens Help; F2 opens About. Arrows/PgUp/PgDn scroll.\r\n'

@@ -1,0 +1,16 @@
+type: sfx
+title: puzzle solved
+description: >
+  About 2.5 s success jingle in A yo (A B D E F#): a fast koto run up, a bell
+  answering, wind chimes on top, ending on an open A chord.
+instruments: ../instruments.yaml
+tempo: 132
+parts:
+  run:   {instrument: pluck, voices: [12, 13], opl: {voices: [5, 6]}, ring: true, level: 0.8}
+  bell:  {instrument: bell, voices: [14], opl: {voices: [7]}, level: 0.8}
+  chime: {instrument: chime, voices: [15], opl: {voices: [8]}, level: 0.9}
+sections:
+  main:
+    run:   "| A4/16 B4 D5 E5 F#5 A5 B5 D6 E6/8 r/8 r/4 | [A4 E5]/2 r/2 |"
+    bell:  "| r/2 r/8 B5/8 E6/4 | A5/2 r/2 |"
+    chime: "| r/2 r/4 A6/8 E7/8 | r/8 B6/8 r/4 r/2 |"

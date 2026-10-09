@@ -1,0 +1,9 @@
+type: sfx
+title: back
+description: Falling two-note pluck (D6 -> A5) for closing a panel, going back, or turning an option off.
+instruments: ../instruments.yaml
+parts:
+  fx: {instrument: pluck, voices: [14, 15], opl: {voices: [7, 8]}, ring: true, level: 0.85}
+sections:
+  main:
+    fx: "D6/5t A5/22t"

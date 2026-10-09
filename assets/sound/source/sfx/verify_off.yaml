@@ -1,0 +1,9 @@
+type: sfx
+title: verify off
+description: Falling bell pair (B5 -> E5) when the check/reveal mode is switched off.
+instruments: ../instruments.yaml
+parts:
+  fx: {instrument: bell, voices: [14, 15], opl: {voices: [7, 8]}, ring: true, level: 0.6}
+sections:
+  main:
+    fx: "B5/6t E5/30t"

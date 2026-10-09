@@ -1,7 +1,7 @@
 FROM debian:trixie-slim
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    ca-certificates dosbox dosbox-x make python3 \
+    ca-certificates dosbox dosbox-x g++ make python3 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY BC/ /opt/dos-toolchain/BC/

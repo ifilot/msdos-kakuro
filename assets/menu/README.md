@@ -28,3 +28,9 @@ puzzle's board stays in memory; switching puzzles loads a fresh board.
 F1 (or H) opens Help; F2 (or A) opens About. Both return to the
 current journal page and selection. Their footer buttons share the existing
 wood-and-paper palette.
+
+## License
+
+This project's artwork is licensed under **GPL-3.0-only**, to the extent
+copyright applies. Source PNGs and conversion scripts are retained for editing.
+See [LICENSE](../../LICENSE) and [licensing and attribution](../../NOTICE.md).

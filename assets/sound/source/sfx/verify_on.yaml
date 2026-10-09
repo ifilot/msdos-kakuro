@@ -1,0 +1,9 @@
+type: sfx
+title: verify on
+description: Rising bell pair (E5 -> B5) when the check/reveal mode is switched on.
+instruments: ../instruments.yaml
+parts:
+  fx: {instrument: bell, voices: [14, 15], opl: {voices: [7, 8]}, ring: true, level: 0.7}
+sections:
+  main:
+    fx: "E5/6t B5/30t"

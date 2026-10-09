@@ -1,0 +1,11 @@
+type: sfx
+title: page
+description: Paper swish (noise sweeping upward) ending in a light pluck, for previous/next journal page.
+instruments: ../instruments.yaml
+parts:
+  swish: {instrument: swish, voices: [15], opl: {voices: [8]}}
+  pluck: {instrument: pluck, voices: [14], opl: {voices: [7]}, level: 0.45}
+sections:
+  main:
+    swish: "C5~C8/16t"
+    pluck: "r/12t E6/4t"

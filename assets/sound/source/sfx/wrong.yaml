@@ -1,0 +1,9 @@
+type: sfx
+title: wrong
+description: Muted low double knock; optional feedback for an incorrect digit while check mode is on.
+instruments: ../instruments.yaml
+parts:
+  fx: {instrument: thud, voices: [15], opl: {voices: [8]}}
+sections:
+  main:
+    fx: "F3/7t E3/16t"

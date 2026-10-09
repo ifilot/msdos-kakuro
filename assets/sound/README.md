@@ -48,3 +48,23 @@ checksum detects ordinary corruption; it is not cryptographic authentication.
 The C++ driver in `src/SNDDRV.CPP` is adapted from the generator's
 `drivers/dos/snddrv.c`/`.h`, with bounded MPU handshakes, validated assets,
 queued MIDI output, inline OPL port writes and timer cleanup.
+
+## License and editable sources
+
+The Kakuro music and effects are licensed under **GPL-3.0-only**, as authorized
+by Ivo Filot for this project. See [LICENSE](../../LICENSE) and
+[attribution](../../NOTICE.md). The editable compositions, effects, instruments
+and project YAML are retained in [source/](source/), copied from
+`cx16-sound-generator/assets/kakuro/`.
+
+To edit and regenerate the audio, copy this source directory into the generator's
+`assets/kakuro/`, then run there:
+
+```sh
+./x16snd project assets/kakuro/project.yaml
+```
+
+Copy the OPL exports into `fm/` and the General MIDI exports into `midi/`,
+renaming `.GMS` to `.MDS` and retaining each target's `sfx.h`, as described above.
+Run `python3 tools/pack_sound.py` from this repository root and rebuild. The
+source YAML is development material and is not loaded by the DOS game.

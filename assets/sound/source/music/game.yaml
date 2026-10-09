@@ -1,0 +1,53 @@
+type: song
+title: Quiet Grid (in game)
+description: >
+  Unobtrusive thinking music. A hirajoshi (A B C E F), the classic koto tuning.
+  Slow koto ostinato, sho pad, sparse shakuhachi phrases with an echo, chimes.
+instruments: ../instruments.yaml
+tempo: 60            # quarter = 60 ticks, eighth = 30 ticks
+meter: 4/4
+budget: 40960
+
+parts:
+  # opl: overrides for the AdLib target (9 FM channels: no room for the echo)
+  koto:   {instrument: koto, voices: [0, 1], ring: true, level: 0.6}
+  pad:    {instrument: sho, voices: [2, 3, 4], level: 0.9}
+  bass:   {instrument: bass, voices: [5], level: 0.8}
+  flute:  {instrument: shakuhachi, voices: [6], level: 0.75,
+           echo: {voice: 7, delay: "8", level: 0.3, pan: R},
+           opl: {echo: null}}
+  chime:  {instrument: chime, voices: [8], pan: L, level: 0.8, opl: {voices: [7]}}
+  perc:   {voices: [9], level: 0.7, opl: {voices: [8]}, kit: {wb: {instrument: woodblock, note: E5}}}
+
+sections:
+  A:
+    koto:  "| A3/8 E4 B4 C5 E5 C5 B4 E4 | A3/8 E4 B4 r C5/8 B4 E4/4
+            | F3/8 C4 E4 A4 C5 A4 E4 C4 | F3/8 C4 E4 r A4/8 E4 C4/4
+            | A3/8 E4 B4 C5 E5 C5 B4 E4 | A3/8 E4 B4 r E5/8 C5 B4/4
+            | E3/8 B3 F4 A4 B4 A4 F4 B3 | E3/8 B3 E4 r A3/8 B3 E4/4 |"
+    pad:   "| [A3 E4 B4]/1 | -/1 | [F3 C4 E4]/1 | -/1 | [A3 E4 B4]/1 | -/1 | [E3 B3 F4]/1 | [E3 A3 B3]/1 |"
+    bass:  "| A2/1 | A2/2. E2/4 | F2/1 | F2/2. C3/4 | A2/1 | A2/2. E2/4 | E2/1 | E2/2 B2/4 E2/4 |"
+    flute: "| r/1 | r/1 | r/2 E5/4^ F5/8 E5/8 | C5/2. r/4 | r/4 B4/4^ C5/4 E5/4 | A4/1 | r/2 F5/4^ E5/4 | B4/2. r/4 |"
+    chime: "| r/1 | r/2 E6/4 r/4 | r/1 | r/1 | r/1 | r/4 B6/4 r/2 | r/1 | r/1 |"
+    perc:  "| wb/4 r/2. | r/1 | r/1 | r/1 | wb/4 r/2. | r/1 | r/1 | r/1 |"
+
+  B:
+    koto:  "| C5/8 A4 E4 C4 F3 C4 E4 A4 | C5/8 A4 E4 r F4/8 E4 C4/4
+            | C4/8 E4 B4 E5 C5 B4 E4 B3 | C4/8 E4 B4 r E5/8 B4 C5/4
+            | E5/8 C5 B4 A4 E4 B4 C5 E5 | A3/8 E4 B4 r C5/8 B4 A4/4
+            | E3/8 B3 F4 A4 B4 F4 E4 B3 | E3/8 A3 B3 r E4/2 |"
+    pad:   "| [F3 C4 E4]/1 | -/1 | [C4 E4 B4]/1 | -/1 | [A3 E4 B4]/1 | -/1 | [E3 B3 F4]/1 | [E3 A3 B3]/1 |"
+    bass:  "| F2/1 | F2/2. C3/4 | C3/1 | C3/2. E2/4 | A2/1 | A2/2. E2/4 | E2/1 | E2/1 |"
+    flute: "| A5/2^ F5/4 E5/4 | C5/2. r/4 | r/4 B4/4 C5/4 E5/4 | B5/2^ A5/4 E5/4
+            | C5/2. B4/8 A4/8 | A4/1 | r/2 B4/4^ C5/4 | B4/2. r/4 |"
+    chime: "| r/2 C6/4 r/4 | r/1 | r/1 | r/4 E6/4 r/2 | r/1 | r/2. A6/4 | r/1 | r/1 |"
+    perc:  "| wb/4 r/2. | r/1 | wb/4 r/2. | r/1 | wb/4 r/2. | r/1 | wb/4 r/2. | r/2. wb/8 wb/8 |"
+
+  C:
+    koto:  "| r/2 E5/8 F5 C5/4 | r/2 B4/8 C5 A4/4 | r/2 E5/8 F5 A5/4 | r/2 F5/8 E5 B4/4 |"
+    pad:   "| [F3 C4 E4]/1 | [E3 A3 B3]/1 | [F3 C4 E4]/1 | [E3 B3 F4]/1 |"
+    bass:  "| r/1 | r/1 | r/1 | E2/1 |"
+    chime: "| E6/2 r/2 | r/1 | A6/2 r/2 | r/1 |"
+
+arrangement: [A, B, A, C]
+loop: A
