@@ -52,7 +52,7 @@ function paint() {
 }
 requestAnimationFrame(paint);
 function sound(samples) {
-  if (!audible || paused || !audio || audio.state !== 'running' || !samples.length) return;
+  if (!engine || !audible || paused || !audio || audio.state !== 'running' || !samples.length) return;
   const now = audio.currentTime;
   // Bound latency instead of queueing seconds of sound after a background tab.
   if (nextAudioTime > now + .3) return;
@@ -90,7 +90,10 @@ async function start() {
     if (ticket !== generation) { await instance.exit(); return; }
     engine = instance; resize(engine.width(), engine.height());
     engine.events().onFrameSize(resize); engine.events().onFrame(draw);
-    engine.events().onSoundPush(sound);
+    // An exiting worker can still deliver queued audio during a restart.
+    engine.events().onSoundPush(samples => {
+      if (engine === instance && !loading) sound(samples);
+    });
     const finished = () => {
       if (engine !== instance) return;
       releaseKeys(); engine = null; paused = false; flushAudio(); buttons();

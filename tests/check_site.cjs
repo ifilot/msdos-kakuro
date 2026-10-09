@@ -19,7 +19,8 @@ async function snapshot(page) {
     for (let i=0; i<data.length; i+=4) {
       const color = data[i]*65536 + data[i+1]*256 + data[i+2]; colors.add(color);
       hash = Math.imul(hash ^ color, 16777619);
-      if (data[i]===223 && data[i+1]===215 && data[i+2]===170) paper++;
+      // Warm paper varies with the game's palette and DOSBox's DAC conversion.
+      if (data[i]>=220 && data[i+1]>=205 && data[i+2]>=140 && data[i+2]<=190) paper++;
     }
     return {hash:hash>>>0, colors:colors.size, paper, width:canvas.width, height:canvas.height};
   });
@@ -77,11 +78,13 @@ async function main() {
     await page.screenshot({path:path.join(diagnostics,'desktop.png'),fullPage:true});
     await page.click('#start');
     await page.locator('#cover').waitFor({state:'hidden',timeout:30000});
-    const splash = await until(page, s=>s.width===640 && s.height===480 && s.colors===4, 'VGA splash');
+    // The four-color artwork gains a fifth color when the DOS mouse cursor shows.
+    const isSplash = s=>s.width===640 && s.height===480 && s.colors>=4 && s.colors<=5;
+    const splash = await until(page, isSplash, 'VGA splash');
     // The native game detects audio after drawing the splash and drains early keys.
     await page.waitForTimeout(2000);
     await key(page,'Enter');
-    const journal = await until(page,s=>s.hash!==splash.hash && s.colors>=5,'puzzle journal');
+    const journal = await until(page,s=>s.hash!==splash.hash && s.colors>=6,'puzzle journal');
     await key(page,'F1');
     await until(page,s=>s.hash!==journal.hash,'help modal');
     await key(page,'Escape');
@@ -105,11 +108,13 @@ async function main() {
     await key(page,'ArrowRight'); await page.waitForTimeout(200);
     assert.equal((await snapshot(page)).hash,frozen.hash,'paused board must ignore input');
     await page.click('#pause');
+    const audioBeforeRestart = await page.evaluate(()=>window.audioStarts);
     await page.click('#restart');
-    await until(page,s=>s.colors===4 && s.hash===splash.hash,'restart splash');
+    await until(page,s=>isSplash(s) && s.hash===splash.hash,'restart splash');
     await page.waitForTimeout(2000);
     await key(page,'Enter');
-    await until(page,s=>s.colors>=5,'restarted journal');
+    await until(page,s=>s.colors>=6,'restarted journal');
+    await page.waitForFunction(count=>window.audioStarts>count,audioBeforeRestart,{timeout:10000});
     await key(page,'Escape');
     await page.locator('#cover').waitFor({state:'visible',timeout:30000});
     assert.equal(await page.locator('#restart').isDisabled(),true);
@@ -120,10 +125,10 @@ async function main() {
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
     assert.equal(await page.locator('.touch-keys').isVisible(),true);
     await page.click('#start');
-    await until(page,s=>s.colors===4,'mobile splash');
+    await until(page,isSplash,'mobile splash');
     await page.waitForTimeout(2000);
     await page.locator('[data-key="257"]').click();
-    await until(page,s=>s.colors>=5,'touch journal');
+    await until(page,s=>s.colors>=6,'touch journal');
     await page.locator('[data-key="257"]').click();
     await until(page,s=>s.paper>30000,'touch puzzle');
     const mobileBoard=await snapshot(page);

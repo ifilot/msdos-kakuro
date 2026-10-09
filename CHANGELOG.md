@@ -7,6 +7,9 @@ published when a tag is pushed; release notes use the matching version below.
 
 ### Changed
 
+- Fix browser audio callbacks during restart and update browser checks for the
+  current VGA palette and optional mouse cursor.
+
 - Use a halfway blend of the original and saturated VGA palettes across the courtyard, journal,
   puzzle and dialogs for hardware displays.
 - Add small speaker and music-note buttons in the journal and puzzle.
