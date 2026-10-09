@@ -12,7 +12,10 @@ CX16-specific mouse, music, timer, and checking controls are omitted.
 
 Edit `HELP.TXT` here and run
 `python3 tools/generate_documents.py` to produce `src/DOCDATA.H`. The generator
-wraps paragraphs to 60 columns. The Help viewer shows 18 rows, scrolls without image
+joins wrapped source lines into paragraphs and wraps them to 60 columns.
+Source paragraphs may be formatted to 80 columns. Keep each `# ` heading on
+its own line, with a blank line after it; use blank lines between paragraphs.
+Each `- ` line starts a separate bullet, with indented continuation lines. The Help viewer shows 18 rows, scrolls without image
 I/O, and supports arrows, Page Up/Down, Space, Home/End, and Escape/Enter to
 return to the same journal selection. The release compiles the text into the
 executable; these source files need not be shipped.

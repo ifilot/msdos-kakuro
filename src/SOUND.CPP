@@ -18,7 +18,7 @@ static int validMPU(unsigned p)
 Sound::Sound() : active(Off), selected(Automatic), sbPort(0x220),
     mpuPort(0x330), musicOn(1), effectsOn(1), currentTrack(-1), message("Sound off")
 {
-    for (int i=0;i<3;++i) { data[i]=0; sizes[i]=0; }
+    for (int i=0;i<AssetCount;++i) { data[i]=0; sizes[i]=0; }
     unsigned base=snd_blaster_base();
     if(validSB(base))sbPort=base;
     const char *env=getenv("BLASTER");
@@ -52,7 +52,7 @@ void Sound::shutdown()
     snd_stop_timer();
     if(active!=Off)snd_shutdown();
     active=Off;
-    for(int i=0;i<3;++i) { free(data[i]); data[i]=0; sizes[i]=0; }
+    for(int i=0;i<AssetCount;++i) { free(data[i]); data[i]=0; sizes[i]=0; }
 }
 
 void Sound::setPorts(unsigned sb,unsigned mpu)
@@ -104,18 +104,18 @@ int Sound::loadAssets(Device choice)
 {
     FILE *file=fopen("SOUND.DAT","rb");
     if(!file)return 0;
-    unsigned char header[56];
-    int ok=fread(header,1,56,file)==56 && !memcmp(header,"KSN1",4)
-        && word(header+4)==6 && !word(header+6);
+    unsigned char header[8+AssetCount*2*8];
+    int ok=fread(header,1,sizeof(header),file)==sizeof(header) && !memcmp(header,"KSN2",4)
+        && word(header+4)==AssetCount*2 && !word(header+6);
     if(fseek(file,0,SEEK_END))ok=0;
     long length=ftell(file);
-    if(length<56)ok=0;
+    if(length<(long)sizeof(header))ok=0;
     int format=choice==MPU401 ? 1 : 0;
-    for(int i=0;i<3 && ok;++i) {
-        const unsigned char *record=header+8+(format*3+i)*8;
+    for(int i=0;i<AssetCount && ok;++i) {
+        const unsigned char *record=header+8+(format*AssetCount+i)*8;
         unsigned long offset=dword(record);
         sizes[i]=word(record+4);
-        if(offset<56 || sizes[i]<18 || sizes[i]>=32768u
+        if(offset<sizeof(header) || sizes[i]<18 || sizes[i]>=32768u
             || offset>(unsigned long)length || sizes[i]>(unsigned long)length-offset) {ok=0;break;}
         data[i]=(unsigned char *)malloc(sizes[i]);
         if(!data[i] || fseek(file,(long)offset,SEEK_SET)
@@ -123,15 +123,17 @@ int Sound::loadAssets(Device choice)
         unsigned sum=0;
         for(unsigned j=0;j<sizes[i];++j)sum+=data[i][j];
         if(sum!=word(record+6))ok=0;
-        if(i<2)ok=ok && snd_validate(data[i],sizes[i],choice);
+        if(i<TrackCount)ok=ok && snd_validate(data[i],sizes[i],choice);
         else {
             if(sizes[i]!=soundOffsets[format][EffectCount])ok=0;
             for(int effect=0;effect<EffectCount && ok;++effect) {
                 unsigned from=soundOffsets[format][effect],to=soundOffsets[format][effect+1];
                 ok=from<to && to<=sizes[i] && snd_validate(data[i]+from,to-from,choice);
-                // Effects must finish; music and MIDI effects own separate channels.
-                if(ok && (data[i][from+5] || (format &&
-                    (word(data[i]+from+12)&word(data[0]+12)))))ok=0;
+                // Effects must finish; every MIDI arrangement must leave their
+                // channels free. FM effects temporarily borrow music channels.
+                if(ok && data[i][from+5])ok=0;
+                for(int track=0;track<TrackCount && ok && format;++track)
+                    if(word(data[i]+from+12)&word(data[track]+12))ok=0;
             }
         }
     }
@@ -139,9 +141,14 @@ int Sound::loadAssets(Device choice)
     return ok;
 }
 
+Sound::Track Sound::puzzleTrack(unsigned puzzleId)
+{
+    return (Track)(GameMusic + (puzzleId ? (puzzleId-1) % (TrackCount-1) : 0));
+}
+
 void Sound::playMusic(Track track)
 {
-    if(track!=MenuMusic && track!=GameMusic)return;
+    if(track<MenuMusic || track>=TrackCount)return;
     int changed=currentTrack!=(int)track;
     currentTrack=track;
     if(active!=Off && musicOn && (changed || !snd_music_playing()))
@@ -150,7 +157,7 @@ void Sound::playMusic(Track track)
 void Sound::playEffect(Effect effect)
 {
     if(active!=Off && effectsOn && effect>=Click && effect<EffectCount)
-        snd_sfx_play(data[2]+soundOffsets[active==MPU401 ? 1 : 0][effect]);
+        snd_sfx_play(data[TrackCount]+soundOffsets[active==MPU401 ? 1 : 0][effect]);
 }
 void Sound::service()
 {

@@ -12,6 +12,9 @@ public:
     void initializeModeX(); // Legacy font/palette preview only.
     // Optional 2x drawing coordinates for the game UI; bitmaps stay native.
     void setDrawingScale(int scale) { drawingScale = active == 2 && scale == 2 ? 2 : 1; }
+    int drawingScaleFactor() const { return drawingScale; }
+    // Read native mode-12h pixel indices, independent of drawing scale.
+    void readPixels(int x, int y, unsigned char *colors, int count);
     int drawingWidth() const { return (active == 1 ? LowWidth : Width) / drawingScale; }
     int drawingHeight() const { return (active == 1 ? LowHeight : Height) / drawingScale; }
     int loadHighBitmap(const char *filename);

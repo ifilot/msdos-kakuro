@@ -90,7 +90,7 @@ int main()
     check(game.loadPuzzle("PUZZLES\\001.PUZ"), "Load game after splash");
     game.draw();
     readPalette(restored);
-    check(restored[4 * 3] == 55 && restored[4 * 3 + 1] == 53,
+    check(restored[4 * 3] == 59 && restored[4 * 3 + 1] == 56,
           "Game installs its own palette after splash");
     check(videoMode() == 0x12, "Gameplay retains BIOS mode 12h");
     unsigned char answerPixel = 0;

@@ -1,10 +1,13 @@
 # Kakuro audio
 
-Imported from `/mnt/c/PROGRAMMING/CX16/cx16-sound-generator`. At import the
+Originally imported from `/mnt/c/PROGRAMMING/CX16/cx16-sound-generator`.
+The additional GAME2/GAME3/GAME4 exports and editable compositions were imported
+from `/mnt/d/PROGRAMMING/CX16/chipscore` (`build/kakuro/opl` and
+`build/kakuro/gm`). At import the
 exports lived in `build/kakuro-dos/fm` and `build/kakuro-dos/midi`; the current
 generator uses `build/kakuro/opl` and `build/kakuro/gm` (identical stream
 contents, with `.GMS` names for MIDI). The exports contain the
-MENU and GAME music loops and 18 effects: navigation, selection, back, page,
+MENU and four GAME music loops and 18 effects: navigation, selection, back, page,
 nine digit tones, verification on/off, wrong, dialog and solved.
 
 The `.OPL` exports target **both AdLib and Sound Blaster FM**, not the Sound
@@ -16,23 +19,25 @@ reserved for future corresponding game features.
 `make build` runs `tools/pack_sound.py` when needed. It produces `SOUND.DAT`
 and `src/SNDDATA.H`. No reference to the external generator is needed to build
 or run the game. To refresh the music, export the Kakuro project there, copy
-the three binary files **and sfx.h** for each target into these directories,
+the six binary files **and sfx.h** for each target into these directories,
 renaming MIDI `.GMS` files to `.MDS`, then run `python3 tools/pack_sound.py`
 and rebuild.
 
-The release contains one 38,891-byte audio pack. The small register/event
+The release contains one 98,357-byte audio pack. The small register/event
 streams are stored directly, avoiding a decompressor and interrupt-time I/O.
-Only the chosen format is loaded: 19,844 bytes for FM or 18,991 for MIDI.
+Only the chosen format is loaded: 50,212 bytes for FM or 48,041 for MIDI.
+All five music streams and the effect bank stay resident, so changing tracks
+requires no disk I/O. Each allocation remains below 32 KiB.
 
 Pack format (little endian):
 
 | Offset | Size | Content |
 | --- | --- | --- |
-| 0 | 4 | `KSN1` |
-| 4 | 2 | Record count, 6 |
+| 0 | 4 | `KSN2` |
+| 4 | 2 | Record count, 12 |
 | 6 | 2 | Reserved, zero |
-| 8 | 48 | Six records: offset:u32, size:u16, sum of payload bytes modulo 65536:u16 |
-| 56 | remaining | FM MENU/GAME/SFX, then MIDI MENU/GAME/SFX |
+| 8 | 96 | Twelve records: offset:u32, size:u16, sum of payload bytes modulo 65536:u16 |
+| 104 | remaining | FM MENU/GAME/GAME2/GAME3/GAME4/SFX, then the same MIDI order |
 
 Each track/effect has the generator's 16-byte `OPLR` or `MIDR` header:
 version:u8, flags:u8 (bit 0 loops), tick rate:u16 (60), loop offset:u32,
@@ -49,19 +54,26 @@ The C++ driver in `src/SNDDRV.CPP` is adapted from the generator's
 `drivers/dos/snddrv.c`/`.h`, with bounded MPU handshakes, validated assets,
 queued MIDI output, inline OPL port writes and timer cleanup.
 
+## Puzzle music
+
+Puzzle IDs cycle through four arrangements: 001 plays Quiet Grid, 002 Bamboo
+Rain, 003 Stone Garden, 004 Lantern Path, then repeat. Returning to the journal
+plays MENU; reopening a puzzle selects the same arrangement. Muting music or
+changing audio devices retains the selected track.
+
 ## License and editable sources
 
 The Kakuro music and effects are licensed under **GPL-3.0-only**, as authorized
 by Ivo Filot for this project. See [LICENSE](../../LICENSE) and
 [attribution](../../NOTICE.md). The editable compositions, effects, instruments
 and project YAML are retained in [source/](source/), copied from
-`cx16-sound-generator/assets/kakuro/`.
+the generator's `assets/kakuro/`.
 
 To edit and regenerate the audio, copy this source directory into the generator's
 `assets/kakuro/`, then run there:
 
 ```sh
-./x16snd project assets/kakuro/project.yaml
+bin/chipscore project assets/kakuro/project.yaml
 ```
 
 Copy the OPL exports into `fm/` and the General MIDI exports into `midi/`,

@@ -1,9 +1,12 @@
-# Kakuro sound assets.  Build:  ./x16snd project assets/kakuro/project.yaml [--target NAME]
+# Kakuro sound assets.  Build:  bin/chipscore project assets/kakuro/project.yaml [--target NAME]
 name: kakuro
 
 music:
   - {source: music/menu.yaml, name: MENU}
-  - {source: music/game.yaml, name: GAME}
+  - {source: music/game.yaml, name: GAME}       # in game 1 "Quiet Grid"
+  - {source: music/game2.yaml, name: GAME2}     # in game 2 "Bamboo Rain" (3/4)
+  - {source: music/game3.yaml, name: GAME3}     # in game 3 "Stone Garden" (very sparse)
+  - {source: music/game4.yaml, name: GAME4}     # in game 4 "Lantern Path" (warmest)
 
 sfx:                       # bundled into one bank per target; offsets go to the header
   - {source: sfx/click.yaml}

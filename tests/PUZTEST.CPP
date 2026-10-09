@@ -254,7 +254,12 @@ int main()
     check(game.selectedRow() == lastRow && game.selectedColumn() == lastCol
           && game.puzzle().cell(lastRow, lastCol)->value == lastValue
           && game.completionModalVisible(), "Modal captures navigation and editing");
-    check(!game.handleKey(27), "Escape can exit from congratulations modal");
+    check(!game.handleKey(13), "Enter returns from congratulations to overview");
+    check(game.isCompleted() && !game.completionModalVisible(),
+          "Enter retains completion without reopening modal");
+    // Reopen a solved fixture to exercise the other modal action.
+    check(game.loadPuzzle("FIXTURES\\SOLVED.PUZ"), "Load solved fixture for Escape action");
+    game.draw();
     pixels = fopen("MODAL.RAW", "wb");
     if (!pixels) return 2;
     for (y = 0; y < 480; ++y) {
@@ -270,13 +275,13 @@ int main()
     if (fclose(palette)) return 2;
     game.draw();
     check(readPixel(28, 56) == 11, "Redraw preserves modal");
-    game.handleKey(13);
+    check(game.handleKey(27), "Escape stays in the completed puzzle");
     check(game.isCompleted() && !game.completionModalVisible()
-          && readPixel(28, 56) == backgroundPixel, "Enter dismisses modal and restores board");
+          && readPixel(28, 56) == backgroundPixel, "Escape dismisses modal and restores board");
     outportb(0x3C7, 4);
-    check(inportb(0x3C9) == 55, "Dismissal restores undimmed board palette");
+    check(inportb(0x3C9) == 59, "Dismissal restores undimmed board palette");
     game.handleKey('0'); game.handleKey(Game::Left);
-    check(game.puzzle().isSolved() && game.selectedColumn() == lastCol,
+    check(game.puzzle().isSolved() && game.selectedColumn() == 0,
           "Completed board stays solved after dismissal");
     check(!game.handleKey(27), "Escape exits from completed board");
     check(game.loadPuzzle("PUZZLES\\001.PUZ") && !game.isCompleted(),

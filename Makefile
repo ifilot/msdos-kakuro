@@ -3,7 +3,7 @@ PYTHON ?= python3
 PUZZLE ?= 001
 GENERATED = src/DIGITDAT.H src/PROFDAT.H src/CATALOG.H src/DOCDATA.H assets/KAKURO.DAT assets/PUZZLES.DAT assets/SOUND.DAT src/SNDDATA.H
 
-.PHONY: site build run fonts test-fonts test-video test-puzzle test-start test-menu test-perf test-assets release test-documents test-archive test-sound smoke verify-toolchain
+.PHONY: site build run fonts test-fonts test-video test-puzzle test-start test-menu test-perf test-assets release test-documents test-archive test-sound test-mouse smoke verify-toolchain
 src/DIGITDAT.H: assets/fonts/digits.json tools/generate_fonts.py
 	$(PYTHON) tools/generate_fonts.py
 
@@ -52,11 +52,15 @@ assets/KAKURO.DAT: tools/pack_assets.py assets/splash/START.VGA assets/splash/ST
 test-perf: $(GENERATED)
 	DOS_CYCLES=3000 $(PYTHON) tools/dos.py test-perf
 
-release: build
+assets/quickmenu/KAKURO.ICC: tools/generate_quickmenu_icon.py
+	$(PYTHON) tools/generate_quickmenu_icon.py
+
+release: build assets/quickmenu/KAKURO.ICC
 	$(PYTHON) tools/package_release.py
 
-test-assets: $(GENERATED)
+test-assets: $(GENERATED) assets/quickmenu/KAKURO.ICC
 	$(PYTHON) tests/test_asset_pack.py
+	$(PYTHON) tests/test_quickmenu_icon.py
 	$(PYTHON) tools/dos.py test-assets
 
 src/DOCDATA.H: tools/generate_documents.py assets/documents/HELP.TXT
@@ -66,6 +70,7 @@ assets/PUZZLES.DAT: tools/pack_puzzles.py tools/pack_assets.py tools/generate_ca
 	$(PYTHON) tools/pack_puzzles.py
 
 test-documents: $(GENERATED)
+	$(PYTHON) tests/test_documents.py
 	$(PYTHON) tools/dos.py test-documents
 
 test-archive: $(GENERATED)
@@ -82,3 +87,6 @@ test-sound: $(GENERATED)
 # Build a self-hosted WebAssembly website from the same DOS distribution.
 site: release
 	$(PYTHON) tools/build_site.py
+
+test-mouse: $(GENERATED)
+	$(PYTHON) tools/dos.py test-mouse

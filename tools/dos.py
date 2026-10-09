@@ -98,7 +98,7 @@ def build(test=None):
         raise SystemExit("Missing Borland C++ compiler: " + str(toolchain))
     output = ROOT / "build" / os.environ.get("DOS_OUTPUT_NAME", test + "-test" if test else "app")
     output.mkdir(parents=True, exist_ok=True)
-    test_main = {"video": "VGATEST", "puzzle": "PUZTEST", "fonts": "FONTTEST", "start": "STARTTST", "menu": "MENUTEST", "perf": "PERFTST", "assets": "ASSETTST", "documents": "DOCTEST", "archive": "PACKTEST", "sound": "SNDTEST"}.get(test)
+    test_main = {"video": "VGATEST", "puzzle": "PUZTEST", "fonts": "FONTTEST", "start": "STARTTST", "menu": "MENUTEST", "perf": "PERFTST", "assets": "ASSETTST", "documents": "DOCTEST", "archive": "PACKTEST", "sound": "SNDTEST", "mouse": "MOUSETST"}.get(test)
     executable = test_main + ".EXE" if test else "KAKURO.EXE"
     (output / executable).unlink(missing_ok=True)
     with tempfile.TemporaryDirectory(prefix="kakuro-build-") as temporary:
@@ -112,14 +112,14 @@ def build(test=None):
         copy_assets(drive)
         if test == "start":
             shutil.copyfile(ROOT / 'assets/splash/courtyard.bin', drive / 'SOURCE.BIN')
-        if test == "puzzle":
+        if test in ("puzzle", "mouse"):
             shutil.copytree(ROOT / "tests/fixtures", drive / "FIXTURES")
         main = test_main + ".CPP" if test else "MAIN.CPP"
         # DOS limits a command tail to 126 bytes; keep growing source lists in a response file.
         extra = " ASSETS.CPP" if (drive / "ASSETS.CPP").exists() else ""
         (drive / "COMPILE.RSP").write_text(
             f"-ml {os.environ.get('DOS_COMPILER_FLAGS', '-G -1-')} -IC:\\BC\\INCLUDE -LC:\\BC\\LIB -e{executable}\n"
-            f"{main} VGA.CPP PUZZLE.CPP GAME.CPP DIGITS.CPP START.CPP PROFONT.CPP MENU.CPP BLOSSOM.CPP DOCVIEW.CPP SOUND.CPP SNDDRV.CPP SOUNDMNU.CPP{extra}\n")
+            f"{main} VGA.CPP PUZZLE.CPP GAME.CPP DIGITS.CPP START.CPP PROFONT.CPP MENU.CPP BLOSSOM.CPP DOCVIEW.CPP SOUND.CPP SNDDRV.CPP SOUNDMNU.CPP MOUSE.CPP HOVER.CPP{extra}\n")
         lines = ["@echo off", "path C:\\BC\\BIN", "D:",
                  "bcc @COMPILE.RSP > COMPILE.TXT",
                  "if errorlevel 1 goto failed", f"if not exist {executable} goto failed"]
@@ -167,7 +167,7 @@ def build(test=None):
             if checks.exists():
                 print(checks.read_text(errors="replace").rstrip())
             raise SystemExit("DOS build/test failed; see " + str(output))
-        expected = {"video": "VGA tests passed", "puzzle": "Puzzle tests passed", "fonts": "Font tests passed", "start": "Start screen tests passed", "menu": "Menu tests passed", "perf": "Performance tests passed", "assets": "Asset tests passed", "documents": "Document tests passed", "archive": "Puzzle archive tests passed", "sound": "Sound tests passed"}.get(test)
+        expected = {"video": "VGA tests passed", "puzzle": "Puzzle tests passed", "fonts": "Font tests passed", "start": "Start screen tests passed", "menu": "Menu tests passed", "perf": "Performance tests passed", "assets": "Asset tests passed", "documents": "Document tests passed", "archive": "Puzzle archive tests passed", "sound": "Sound tests passed", "mouse": "Mouse tests passed"}.get(test)
         if test and (not (output / "RESULT.TXT").exists()
                      or (output / "RESULT.TXT").read_text().strip() != expected):
             raise SystemExit("Missing test result")
@@ -198,7 +198,7 @@ def run(puzzle, fonts=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("build", "run", "test", "test-puzzle", "test-fonts", "test-start", "test-menu", "test-perf", "test-assets", "test-documents", "test-archive", "test-sound"))
+    parser.add_argument("action", choices=("build", "run", "test", "test-puzzle", "test-fonts", "test-start", "test-menu", "test-perf", "test-assets", "test-documents", "test-archive", "test-sound", "test-mouse"))
     parser.add_argument("--puzzle", default="001")
     parser.add_argument("--fonts", action="store_true")
     args = parser.parse_args()
@@ -214,7 +214,7 @@ def main():
     elif action == "run":
         run(args.puzzle, args.fonts)
     else:
-        build(test={"test": "video", "test-puzzle": "puzzle", "test-fonts": "fonts", "test-start": "start", "test-menu": "menu", "test-perf": "perf", "test-assets": "assets", "test-documents": "documents", "test-archive": "archive", "test-sound": "sound"}.get(action))
+        build(test={"test": "video", "test-puzzle": "puzzle", "test-fonts": "fonts", "test-start": "start", "test-menu": "menu", "test-perf": "perf", "test-assets": "assets", "test-documents": "documents", "test-archive": "archive", "test-sound": "sound", "test-mouse": "mouse"}.get(action))
 
 
 if __name__ == "__main__":

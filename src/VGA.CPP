@@ -534,3 +534,19 @@ void VgaScreen::drawCenteredBitmap(int x, int y, int boxWidth, int boxHeight,
                y + (boxHeight - (bottom - top + 1)) / 2 - top,
                rows, width, height, color);
 }
+
+void VgaScreen::readPixels(int x,int y,unsigned char *colors,int count)
+{
+    if(active!=2 || !colors || x<0 || y<0 || y>=Height || count<=0 || count>Width-x)return;
+    memset(colors,0,count);
+    unsigned int offset=(unsigned int)y*80U;
+    for(int plane=0;plane<4;++plane) {
+        outport(0x3CE,(plane<<8)|4);
+        unsigned char bits=0;
+        for(int col=0;col<count;++col) {
+            int pixel=x+col;
+            if(!col || !(pixel&7))bits=memory[offset+(pixel>>3)];
+            if(bits&(0x80>>(pixel&7)))colors[col]|=1<<plane;
+        }
+    }
+}

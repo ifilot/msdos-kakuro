@@ -55,7 +55,7 @@ def decode(data):
 
 
 def main():
-    colors = bytes((50,50,37,33,25,25,16,12,12,8,8,8))
+    colors = bytes((57,53,36,35,21,19,14,9,8,5,5,6))
     items = [
         ('START.VGA', ROOT/'assets/splash/START.VGA', (ROOT/'assets/splash/START.PAL').read_bytes()),
         ('BOARD.VGA', ROOT/'assets/background/BOARD.VGA', colors),

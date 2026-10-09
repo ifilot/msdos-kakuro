@@ -1,6 +1,8 @@
 #ifndef KAKURO_MENU_H
 #define KAKURO_MENU_H
 #include "VGA.H"
+#include "HOVER.H"
+#include "SOUND.H"
 
 class MenuScreen {
 public:
@@ -15,6 +17,9 @@ public:
     MenuScreen(VgaScreen &display);
     int loadCatalog(const char *preferred = "001.PUZ");
     void draw();
+    void setSound(Sound *audio) { sound = audio; }
+    HoverRect hoverAt(int x, int y) const;
+    int handleMouse(int x, int y, int button);
     int handleKey(int key);
     int count() const { return puzzleCount; }
     int selectedIndex() const { return selected; }
@@ -26,6 +31,7 @@ public:
     void showError(const char *message);
 private:
     VgaScreen &screen;
+    Sound *sound;
     Entry entries[MaxPuzzles];
     int puzzleCount, selected, visible;
     char errorText[48];

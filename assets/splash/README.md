@@ -8,8 +8,8 @@ matching packed 2bpp bitmap and CX16 palette. Artwork, title, and the embedded
 
 `tools/generate_splash.py` uses only the Python standard library to convert
 these source bytes into `START.VGA` (two 38,400-byte VGA bit planes) and
-`START.PAL` (four RGB triples with six-bit DAC components). RGB components are
-scaled from the CX16's four-bit range to VGA's six-bit range. `SHA256SUMS`
+`START.PAL` (four RGB triples with six-bit DAC components). The warm VGA palette blends the original and stronger palettes equally
+(rounded to six-bit DAC values); source pixels and the original CX16 palette remain available. `SHA256SUMS`
 records both the copied sources and generated files.
 
 The start screen uses BIOS mode 12h, 640×480 with 16 available colors; only

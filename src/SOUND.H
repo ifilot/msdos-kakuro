@@ -1,12 +1,12 @@
 #ifndef KAKURO_SOUND_H
 #define KAKURO_SOUND_H
 
-// One resident music stream and one resident effect stream. No disk access
+// Resident menu/puzzle music and effects for the selected format. No disk access
 // during playback; hardware synthesis for all three supported interfaces.
 class Sound {
 public:
     enum Device { Automatic = -1, Off = 0, AdLib = 1, SoundBlaster = 2, MPU401 = 3 };
-    enum Track { MenuMusic, GameMusic };
+    enum Track { MenuMusic, GameMusic, GameMusic2, GameMusic3, GameMusic4, TrackCount };
     enum Effect { Click, Select, Back, Page, Place1, Place2, Place3, Place4,
                   Place5, Place6, Place7, Place8, Place9, VerifyOn, VerifyOff,
                   Wrong, Dialog, Solved, EffectCount };
@@ -16,6 +16,8 @@ public:
     int configure(Device choice);
     void shutdown();
     void playMusic(Track track);
+    static Track puzzleTrack(unsigned puzzleId);
+    void playPuzzleMusic(unsigned puzzleId) { playMusic(puzzleTrack(puzzleId)); }
     void playEffect(Effect effect);
     void service();
     void toggleMusic();
@@ -33,8 +35,9 @@ public:
 private:
     Device active, selected;
     unsigned sbPort, mpuPort;
-    unsigned char *data[3];
-    unsigned sizes[3];
+    enum { AssetCount = TrackCount + 1 };
+    unsigned char *data[AssetCount];
+    unsigned sizes[AssetCount];
     int musicOn, effectsOn, currentTrack;
     const char *message;
     int loadAssets(Device device);

@@ -5,6 +5,7 @@
 #include "SNDDRV.H"
 #include "SOUNDMNU.H"
 #include "MENU.H"
+#include "GAME.H"
 unsigned _stklen=16384;
 static int errors;
 static FILE *checks;
@@ -43,7 +44,17 @@ int main()
     sound.toggleMusic();check(snd_music_playing(),"Music toggle on");
     sound.toggleEffects();sound.playEffect(Sound::Solved);
     check(!snd_sfx_playing(),"Disabled effects stay silent");sound.toggleEffects();
-    sound.playMusic(Sound::GameMusic);check(snd_music_playing(),"Game track starts");
+    for(unsigned puzzle=1;puzzle<=96;++puzzle) {
+        check(Sound::puzzleTrack(puzzle)==(Sound::Track)(Sound::GameMusic+(puzzle-1)%4),
+              "Puzzle IDs cycle through all four arrangements");
+        sound.playPuzzleMusic(puzzle);
+        check(snd_music_playing(),"Every puzzle track starts on FM");
+    }
+    sound.playPuzzleMusic(4);sound.toggleMusic();
+    check(!snd_music_playing(),"Music toggle silences new arrangement");
+    sound.toggleMusic();check(snd_music_playing(),"Music toggle resumes new arrangement");
+    check(sound.configure(Sound::AdLib) && snd_music_playing(),
+          "Device change resumes chosen puzzle arrangement");
     sound.shutdown();
     check(getvect(8)==original,"Shutdown restores original INT 08h vector");
     check(sound.configure(Sound::AdLib),"AdLib OPL detection and asset loading");
@@ -53,7 +64,10 @@ int main()
     sound.shutdown();
     check(sound.configure(Sound::MPU401),"MPU reset ACK, UART ACK and MIDI assets");
     fprintf(checks,"MPU result: %s\n",sound.status());
-    sound.playMusic(Sound::GameMusic);sound.playEffect(Sound::Solved);
+    for(puzzle=1;puzzle<=4;++puzzle) {
+        sound.playPuzzleMusic(puzzle);sound.playEffect(Sound::Solved);
+        check(snd_music_playing() && snd_sfx_playing(),"All MIDI arrangements allow concurrent effects");
+    }
     waitBIOS(4);check(snd_music_playing() && snd_sfx_playing(),"Concurrent MIDI music and effects");
     sound.shutdown();check(getvect(8)==original,"MIDI shutdown restores timer");
     sound.setPorts(0x280,0x330);
@@ -70,15 +84,35 @@ int main()
           "Missing audio pack is safe");
     rename("SOUND.BAK","SOUND.DAT");
     FILE *bad=fopen("SOUND.DAT","r+b");
-    if(!bad)return 2;fseek(bad,70,SEEK_SET);int byte=fgetc(bad);
-    fseek(bad,70,SEEK_SET);fputc(byte^1,bad);fclose(bad);
+    if(!bad)return 2;fseek(bad,104,SEEK_SET);int byte=fgetc(bad);
+    fseek(bad,104,SEEK_SET);fputc(byte^1,bad);fclose(bad);
     check(!sound.configure(Sound::AdLib),"Damaged stream checksum rejected");
     bad=fopen("SOUND.DAT","r+b");if(!bad)return 2;
-    fseek(bad,70,SEEK_SET);fputc(byte,bad);fclose(bad);
+    fseek(bad,104,SEEK_SET);fputc(byte,bad);fclose(bad);
     check(sound.configure(Sound::AdLib),"Recovered pack loads");
     VgaScreen screen;screen.initialize();
     MenuScreen menu(screen);menu.loadCatalog();menu.draw();
-    check(menu.handleKey(0x13D)==MenuScreen::Audio,"F3 opens audio settings");
+    menu.setSound(&sound);menu.draw();
+    check(menu.handleKey(0x13F)==MenuScreen::Audio,"F5 opens hardware settings");
+    int music=sound.musicEnabled(),effects=sound.effectsEnabled();
+    check(menu.handleKey(0x13D)==MenuScreen::Wait && sound.effectsEnabled()!=effects
+          && sound.musicEnabled()==music,"Journal speaker toggles effects independently");
+    check(menu.handleKey(0x13E)==MenuScreen::Wait && sound.musicEnabled()!=music,
+          "Journal note toggles music without opening a panel");
+    sound.initialize();
+    check(sound.musicEnabled()!=music && sound.effectsEnabled()!=effects,
+          "Button settings survive sound initialization");
+    Game game(screen);game.setSound(&sound);
+    check(game.loadPuzzle("PUZZLES\\001.PUZ"),"Load puzzle with audio buttons");game.draw();
+    int rowIndex=game.selectedRow(),columnIndex=game.selectedColumn();
+    check(game.handleKey('e') && sound.effectsEnabled()==effects,
+          "Puzzle speaker toggles effects");
+    check(game.handleKey('m') && sound.musicEnabled()==music,"Puzzle note toggles music");
+    check(game.selectedRow()==rowIndex && game.selectedColumn()==columnIndex,
+          "Audio toggles preserve puzzle selection");
+    game.handleKey('7');
+    check(game.puzzle().cell(rowIndex,columnIndex)->value==7,
+          "Puzzle entry still works after drawing buttons");
     SoundMenu panel(screen,sound);panel.draw();
     panel.handleKey(0x148);panel.handleKey(0x148); // Automatic, then clamp.
     check(panel.selectedIndex()==0,"Sound selection clamps at top");
@@ -90,7 +124,7 @@ int main()
     panel.handleKey(13);check(sound.activeDevice()==Sound::Off,"Panel applies Off");
     check(!panel.handleKey(27),"Escape closes panel");
     sound.setPorts(0x220,0x330);sound.configure(Sound::AdLib);
-    SoundMenu preview(screen,sound);preview.draw();
+    menu.draw();
     FILE *file=fopen("SCREEN.RAW","wb");if(!file)return 2;
     volatile unsigned char far *v=(volatile unsigned char far *)MK_FP(0xA000,0);
     unsigned char row[640];

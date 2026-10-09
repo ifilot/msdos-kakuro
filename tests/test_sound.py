@@ -110,10 +110,10 @@ class SoundTests(unittest.TestCase):
 
     def test_pack_matches_imported_exports(self):
         data = (ROOT / 'assets/SOUND.DAT').read_bytes()
-        self.assertEqual(data[:8], b'KSN1\x06\x00\x00\x00')
+        self.assertEqual(data[:8], b'KSN2\x0c\x00\x00\x00')
         for i, (folder, ext) in enumerate([('fm', 'OPL'), ('midi', 'MDS')]):
-            for j, name in enumerate(('MENU', 'GAME', 'SFX')):
-                offset, size, checksum = struct.unpack_from('<IHH', data, 8+(i*3+j)*8)
+            for j, name in enumerate(('MENU', 'GAME', 'GAME2', 'GAME3', 'GAME4', 'SFX')):
+                offset, size, checksum = struct.unpack_from('<IHH', data, 8+(i*6+j)*8)
                 exported = (ASSETS / folder / (name+'.'+ext)).read_bytes()
                 self.assertEqual(data[offset:offset+size], exported)
                 self.assertEqual(checksum, sum(exported) & 65535)
@@ -124,7 +124,7 @@ class SoundTests(unittest.TestCase):
             # Discover complete stream boundaries independently of sfx.h.
             offsets = [n for n in range(len(bank)) if bank[n:n+4] in (b'OPLR', b'MIDR')]
             offsets.append(len(bank))
-            for song in ('MENU', 'GAME'):
+            for song in ('MENU', 'GAME', 'GAME2', 'GAME3', 'GAME4'):
                 music_path = ASSETS / folder / (song+'.'+ext)
                 music = music_path.read_bytes()
                 duration = decode(music, folder=='fm')[1]
@@ -143,7 +143,7 @@ class SoundTests(unittest.TestCase):
         for folder, ext, dev in [('fm', 'OPL', 1), ('midi', 'MDS', 3)]:
             bank = (ASSETS / folder / ('SFX.'+ext)).read_bytes()
             offsets = [n for n in range(len(bank)) if bank[n:n+4] in (b'OPLR', b'MIDR')] + [len(bank)]
-            streams = [(ASSETS / folder / (name+'.'+ext)).read_bytes() for name in ('MENU', 'GAME')]
+            streams = [(ASSETS / folder / (name+'.'+ext)).read_bytes() for name in ('MENU', 'GAME', 'GAME2', 'GAME3', 'GAME4')]
             streams += [bank[a:b] for a,b in zip(offsets, offsets[1:])]
             path = self.directory / 'validate'
             def valid(data, device=dev):

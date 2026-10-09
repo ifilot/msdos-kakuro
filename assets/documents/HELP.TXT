@@ -1,52 +1,97 @@
 # Welcome to Kakuro
-Kakuro combines a crossword-shaped grid with number sums. Fill each cream cell with a digit from 1 to 9. Dark clue cells tell you which totals to make.
+
+Kakuro combines a crossword-shaped grid with number sums. Fill each cream cell
+with a digit from 1 to 9. Dark clue cells tell you which totals to make.
 
 # Reading the clues
-The number in the upper-right half of a clue cell gives the sum of the cells to its right. The number in the lower-left half gives the sum of the cells below it.
+
+The number in the upper-right half of a clue cell gives the sum of the cells to
+its right. The number in the lower-left half gives the sum of the cells below
+it.
 
 Follow each run until you reach another dark cell or the edge of the grid.
 
 # The two rules
+
 - The digits in a run must add up to its clue.
 - A digit may appear only once within that run.
 
-For example, a two-cell run totaling 10 can contain 1 and 9, 2 and 8, 3 and 7, or 4 and 6. It cannot contain 5 and 5. Crossing runs help you decide the order.
+For example, a two-cell run totaling 10 can contain 1 and 9, 2 and 8, 3 and 7,
+or 4 and 6. It cannot contain 5 and 5. Crossing runs help you decide the order.
 
 # Writing and erasing
-Use the arrow keys to move the amber selector. Press 1-9 to enter a digit. Type another digit to replace it. Backspace, Delete or 0 clears the selected cell.
 
-Rose cells contain given numbers. They are part of the puzzle and cannot be changed. Dark cells contain clues or separate the runs; you cannot write in them.
+Use the arrow keys to move the amber selector. Press 1-9 to enter a digit. Type
+another digit to replace it. Backspace, Delete or 0 clears the selected cell.
+
+Rose cells contain given numbers. They are part of the puzzle and cannot be
+changed. Dark cells contain clues or separate the runs; you cannot write in
+them.
 
 # Finishing a puzzle
-The game checks the sums and the no-repeat rule after each entry. Any valid solution is accepted. When the board is solved, a congratulations panel appears.
 
-Press Enter to view the completed board, or Escape to return to the journal. Completed boards remain locked.
+The game checks the sums and the no-repeat rule after each entry. Any valid
+solution is accepted. When the board is solved, a congratulations panel appears.
+
+Press Enter to return to the journal, or Escape to view the completed board.
+Completed boards remain locked.
 
 # Returning to the journal
-Press Escape during a puzzle to return to selection. Reopening the current puzzle keeps your entries. Choosing a different puzzle starts a fresh board.
 
-Played and solved marks last for this session. Closing the application clears your entries and these marks.
+Press Escape during a puzzle to return to selection. Reopening the current
+puzzle keeps your entries. Choosing a different puzzle starts a fresh board.
+
+Played and solved marks last for this session. Closing the application clears
+your entries and these marks.
 
 # Choosing a puzzle
-The journal contains 96 numbered puzzles. There are 24 cards per page. Each card shows its number and board size.
 
-Use arrows to select a card and Enter to play. Page Up and Page Down, or [ and ], change pages. Home and End select the first and last card on a page.
+The journal contains 96 numbered puzzles. There are 24 cards per page. Each card
+shows its number and board size.
 
-Filled sakura blossoms show the selected puzzle's difficulty. More blossoms indicate a harder puzzle. Unrated puzzles are labelled UNRATED.
+Use arrows to select a card and Enter to play. Page Up and Page Down, or [ and
+], change pages. Home and End select the first and last card on a page.
 
-An outlined square marks a played puzzle; a checked square marks a solved puzzle. F1 opens this guide and F2 opens build information. Escape closes the game from the journal.
+Filled sakura blossoms show the selected puzzle's difficulty. More blossoms
+indicate a harder puzzle. Unrated puzzles are labelled UNRATED.
+
+An outlined square marks a played puzzle; a checked square marks a solved
+puzzle. F1 opens this guide and F2 opens build information. Escape closes the
+game from the journal.
 
 # A useful first step
-Look for short runs and runs with only one empty cell. A two-cell clue of 3 must use 1 and 2; a two-cell clue of 17 must use 8 and 9. Use crossing runs to decide the order.
+
+Look for short runs and runs with only one empty cell. A two-cell clue of 3 must
+use 1 and 2; a two-cell clue of 17 must use 8 and 9. Use crossing runs to decide
+the order.
+
+# Mouse controls
+
+If a DOS mouse driver is installed, click a puzzle card to play. Click the page
+control to change pages, or the Help, About and Quit buttons below.
+
+In a puzzle, click an empty answer cell, then use the digit buttons below the
+board to enter numbers. CLEAR erases the selected cell. BACK returns to the
+journal. Right click works like Escape, including on the completion panel.
+
+Click the speaker to toggle effects, the music note to toggle music, and the cog
+to open hardware settings. In settings, click a device row, then Apply; Close
+returns to the game.
 
 # Music and sound
-Press F3 in the journal or during a puzzle to open sound settings. Use Up and Down to select Automatic, Off, AdLib, Sound Blaster FM or MPU-401 / General MIDI. Enter applies the device and plays a test sound; Escape closes the panel.
 
-M toggles music and E toggles effects. B changes the Sound Blaster base port; P changes the MIDI port. Press Enter to apply port changes. Settings are kept in SOUND.CFG beside the game.
+Small speaker and music-note buttons appear in the upper-right corner of the
+journal and puzzle screens. F3 or E toggles effects; F4 or M toggles music. A
+slash marks a disabled button. Changes save to SOUND.CFG beside the game.
 
-Automatic checks Sound Blaster FM, AdLib, then MPU-401. If no device responds, the game stays silent. Sound Blaster uses FM synthesis for these tracks and effects. MPU-401 needs a connected General MIDI synthesizer; an interface alone cannot produce sound.
+The cog button or F5 opens hardware settings. Use Up and Down to select
+Automatic, Off, AdLib, Sound Blaster FM or MPU-401 / General MIDI. Enter applies
+the device; Escape closes the panel. B changes the Sound Blaster base port; P
+changes the MIDI port. Press Enter to apply port changes.
 
-# Reading these pages
-Up and Down scroll one line. Page Up and Page Down move one screen. Space also moves down one screen. Home returns to the beginning; End goes to the last screen.
+Automatic checks Sound Blaster FM, AdLib, then MPU-401. If no device responds,
+the game stays silent. Sound Blaster uses FM synthesis for these tracks and
+effects. MPU-401 needs a connected General MIDI synthesizer; an interface alone
+cannot produce sound.
 
 Press Escape or Enter to return to the journal.

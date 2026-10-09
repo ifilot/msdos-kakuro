@@ -40,7 +40,7 @@ jobs:
             kakuro-build make -B \
             verify-toolchain smoke \
             test-video test-puzzle test-fonts test-start test-menu \
-            test-assets test-archive test-documents test-sound test-perf \
+            test-assets test-archive test-documents test-sound test-mouse test-perf \
             release
 
       - name: Prepare changelog release notes

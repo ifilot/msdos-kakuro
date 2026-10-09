@@ -22,7 +22,7 @@ void DocumentScreen::show(Document document)
     if(document==About) { showAbout(); return; }
     count=sizeof(documentHELP)/sizeof(documentHELP[0]);
     screen.setDrawingScale(1);
-    static const unsigned char colors[4][3]={{50,50,37},{33,25,25},{16,12,12},{8,8,8}};
+    static const unsigned char colors[4][3]={{57,53,36},{35,21,19},{14,9,8},{5,5,6}};
     for (int i=0;i<4;++i) screen.setPaletteColor(i,colors[i][0],colors[i][1],colors[i][2]);
     if (!screen.loadHighBitmap("MENU.VGA")) screen.clear(Paper);
     panel(screen,48,24,544,56); panel(screen,48,96,544,320); panel(screen,48,424,544,40);
@@ -38,16 +38,16 @@ void DocumentScreen::showAbout()
     screen.setDrawingScale(1);
     // Keep the journal in VGA memory; dim it with its palette for the modal.
     static const unsigned char theme[9][3]={
-        {50,50,37},{33,25,25},{16,12,12},{8,8,8},{55,53,42},
-        {43,36,31},{63,52,28},{23,17,14},{53,40,35}
+        {57,53,36},{35,21,19},{14,9,8},{5,5,6},{59,56,43},
+        {44,31,24},{63,48,16},{24,14,9},{58,35,33}
     };
     for(int i=0;i<9;++i)
         screen.setPaletteColor(i,theme[i][0]/2,theme[i][1]/2,theme[i][2]/2);
     enum { Frame=10,Gold=11,Face=12,Accent=13,Shadow=14 };
-    screen.setPaletteColor(Frame,16,12,12);
-    screen.setPaletteColor(Gold,63,52,28);
-    screen.setPaletteColor(Face,55,53,42);
-    screen.setPaletteColor(Accent,33,25,25);
+    screen.setPaletteColor(Frame,14,9,8);
+    screen.setPaletteColor(Gold,63,48,16);
+    screen.setPaletteColor(Face,59,56,43);
+    screen.setPaletteColor(Accent,35,21,19);
     screen.setPaletteColor(Shadow,4,4,4);
     screen.fillRect(116,122,416,244,Shadow);
     screen.fillRect(112,118,416,244,Frame);
@@ -101,4 +101,40 @@ int DocumentScreen::handleKey(int key)
     if(next<0)next=0; if(next>maximum)next=maximum;
     if(next!=top) {top=next;renderText();}
     return 1;
+}
+
+int DocumentScreen::handleMouse(int x,int y,int button)
+{
+    if(button==2)return handleKey(27);
+    if(button!=1)return 1;
+    if(current==About) {
+        if(x>=112 && x<528 && y>=328 && y<362)return handleKey(13);
+        return 1;
+    }
+    if(y>=424 && y<464) {
+        if(x>=48 && x<184)return handleKey(27);
+        if(x>=400 && x<512)return handleKey(Game::Up);
+        if(x>=512 && x<592)return handleKey(Game::Down);
+    }
+    if(x>=572 && x<584 && y>=112 && y<400) {
+        int maximum=count>VisibleLines ? count-VisibleLines : 0;
+        top=(int)((long)(y-112)*maximum/287);
+        renderText();
+    }
+    return 1;
+}
+
+HoverRect DocumentScreen::hoverAt(int x,int y) const
+{
+    if(current==About) {
+        if(x>=112 && x<528 && y>=328 && y<362)return HoverRect(112,328,416,34,1);
+        return HoverRect();
+    }
+    if(y>=424 && y<464) {
+        if(x>=48 && x<184)return HoverRect(48,424,136,40);
+        if(x>=400 && x<512 && top>0)return HoverRect(400,424,112,40);
+        if(x>=512 && x<592 && top<count-VisibleLines)return HoverRect(512,424,80,40);
+    }
+    if(x>=572 && x<584 && y>=112 && y<400)return HoverRect(572,112,12,288);
+    return HoverRect();
 }

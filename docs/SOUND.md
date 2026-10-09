@@ -1,11 +1,19 @@
 # Sound integration
 
 `Sound` owns hardware initialization, resident assets, music, effects and
-settings. `SoundMenu` draws the F3 panel. `SNDDRV` handles register/event
+settings. `SoundMenu` draws the speaker/music buttons and the F5 hardware panel. `SNDDRV` handles register/event
 playback, effect channel lending and INT 08h timing. Game and menu code use
 the device-independent `Sound::Track` and `Sound::Effect` enums.
 
-Music switches between the menu and game loops. Effects accompany selection,
+F3/E toggles effects and F4/M toggles music directly in both journal and game.
+Buttons show a slash when disabled; each toggle saves SOUND.CFG. F5 keeps
+device and port configuration available through the cog button. With a DOS
+mouse driver, all three audio buttons and the hardware panel are clickable.
+
+Music switches between the menu loop and four puzzle loops. Puzzle IDs assign
+Quiet Grid, Bamboo Rain, Stone Garden and Lantern Path in sequence, repeating
+every four puzzles. Reopening a puzzle keeps its arrangement. All tracks for
+the selected device stay resident; track switches require no disk I/O. Effects accompany selection,
 page changes, movement, digit entry, erasing, attempts to edit locked cells,
 returning and puzzle completion. On FM, effects temporarily borrow channels
 and restore music's instruments afterwards. MIDI effects use separate channels.
@@ -14,7 +22,7 @@ Automatic detection tries the Sound Blaster DSP reset signature and FM timer
 test at the configured SB base, then the OPL timer test at 388h, then MPU-401
 reset/UART acknowledgements at the configured MIDI base. BLASTER's A and P
 fields supply defaults; otherwise these are 220h and 330h. Automatic does not
-scan every ISA port. The F3 panel permits SB bases 220/240/260/280 and MPU
+scan every ISA port. The F5 panel permits SB bases 220/240/260/280 and MPU
 bases 300/310/320/330. AdLib uses 388h. Original Sound Blasters without an
 MPU-compatible interface can use the Sound Blaster FM backend.
 
@@ -52,7 +60,7 @@ Optional runner variables:
 | `DOS_SOUNDFONT` | Host `.sf2` file; Docker mounts it read-only |
 | `DOS_CYCLES` | Emulated CPU budget, e.g. 3000 for a slower test |
 
-`make test-sound` compares both tracks and representative effects against an
+`make test-sound` compares all five tracks and representative effects against an
 independent host model, across loop points, for all three device paths. It
 also checks every effect, malformed streams and pack contents. The DOS test
 checks detection, concurrent playback, settings, failure handling, timer

@@ -1,0 +1,68 @@
+type: song
+title: Lantern Path (in game 4)
+description: >
+  The warmest, most melodic alternative. F yo pentatonic (F G Bb C D) with
+  sus / quartal chords (F Bb Gm7 C | F Dm Bb C): koto 8th arpeggios, a singing
+  shakuhachi melody with echo, gentle walking bass, quiet sho pad, a soft
+  shaker-and-woodblock pulse, occasional chimes.
+instruments: ../instruments.yaml
+tempo: 75            # quarter = 48 ticks, sixteenth = 12: exact grid
+meter: 4/4
+budget: 40960
+
+parts:
+  # opl: overrides for the OPL2 target (9 FM channels: no room for the echo)
+  koto:  {instrument: koto, voices: [0, 1], ring: true, level: 0.55}
+  flute: {instrument: shakuhachi, voices: [2], level: 0.75,
+          echo: {voice: 3, delay: "8.", level: 0.28, pan: R}, opl: {echo: null}}
+  bass:  {instrument: bass, voices: [4], level: 0.7, opl: {voices: [3]}}
+  pad:   {instrument: sho, voices: [5, 6, 7], level: 0.7, opl: {voices: [4, 5, 6]}}
+  perc:  {voices: [8], level: 0.55, opl: {voices: [7]},
+          kit: {wb: {instrument: woodblock, note: F5}, sh: {instrument: shaker, note: C7}}}
+  chime: {instrument: chime, voices: [9], pan: L, level: 0.7, opl: {voices: [8]}}
+
+patterns:
+  kF:  "F3/8 C4 G4 C5 D5 C5 G4 C4"
+  kBb: "Bb3/8 F4 C5 D5 F5 D5 C5 F4"
+  kGm: "G3/8 D4 F4 Bb4 D5 Bb4 F4 D4"
+  kC:  "C4/8 G4 Bb4 C5 F5 C5 Bb4 G4"
+  kDm: "D4/8 G4 C5 D5 G5 D5 C5 G4"
+  # B section: lighter figure, four notes and one left ringing
+  kGm2: "G3/8 D4 F4 Bb4 D5/2"
+  kC2:  "C4/8 G4 Bb4 C5 F5/2"
+  kF2:  "F3/8 C4 G4 C5 D5/2"
+  kBb2: "Bb3/8 F4 C5 D5 F5/2"
+  kDm2: "D4/8 G4 C5 D5 G5/2"
+  bF:  "F2/4. F2/8 C3/4 F2/4"
+  bBb: "Bb2/4. Bb2/8 F2/4 Bb2/4"
+  bGm: "G2/4. G2/8 D3/4 G2/4"
+  bC:  "C3/4. C3/8 G2/4 C3/4"
+  bDm: "D3/4. D3/8 C3/4 D3/4"
+  pF:  "[F3 C4 G4]/1"
+  pBb: "[Bb3 F4 C5]/1"
+  pGm: "[G3 D4 F4]/1"
+  pC:  "[C4 F4 G4]/1"
+  pDm: "[D4 G4 C5]/1"
+  pulse: "wb/8 sh/8 sh/8 sh/8 r/8 sh/8 sh/8 sh/8"
+
+sections:
+  A:
+    koto:  "| @kF | @kBb | @kGm | @kC | @kF | @kDm | @kBb | @kC |"
+    flute: "| C5/4. D5/8 F5/4 G5/4 | F5/2 D5/4 C5/4 | D5/4. F5/8 G5/4 Bb5/4 | G5/2. r/4
+            | C6/4. Bb5/8 G5/4 F5/4 | G5/4 F5/4 D5/4 C5/4 | D5/4. F5/8 G5/4 F5/4 | F5/2. r/4 |"
+    bass:  "| @bF | @bBb | @bGm | @bC | @bF | @bDm | @bBb | @bC |"
+    pad:   "| @pF | @pBb | @pGm | @pC | @pF | @pDm | @pBb | @pC |"
+    perc:  "| @pulse | @pulse | @pulse | @pulse | @pulse | @pulse | @pulse | @pulse |"
+    chime: "| r/1 | r/2 D6/4 r/4 | r/1 | r/1 | r/4 G6/4 r/2 | r/1 | r/1 | r/2. C6/4 |"
+
+  B:
+    koto:  "| @kGm2 | @kC2 | @kF2 | @kBb2 | @kGm2 | @kC2 | @kDm2 | @kC |"
+    flute: "| Bb5/2^ G5/4 F5/4 | G5/4. F5/8 D5/2 | C5/4 D5/4 F5/4 G5/4 | D6/2.^ C6/4
+            | Bb5/4. G5/8 F5/4 D5/4 | F5/4 G5/4 C6/2 | D6/4. C6/8 Bb5/4 G5/4 | G5/2. r/4 |"
+    bass:  "| @bGm | @bC | @bF | @bBb | @bGm | @bC | @bDm | @bC |"
+    pad:   "| @pGm | @pC | @pF | @pBb | @pGm | @pC | @pDm | @pC |"
+    perc:  "| @pulse | @pulse | @pulse | @pulse | @pulse | @pulse | @pulse | @pulse |"
+    chime: "| r/1 | r/1 | r/2 F6/4 r/4 | r/1 | r/1 | r/4 C6/4 r/2 | r/1 | r/1 |"
+
+arrangement: [A, B, A, B]
+loop: A

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "GAME.H"
+#include "SOUNDMNU.H"
 #include "DIGITS.H"
 #include "PROFONT.H"
 #include "BLOSSOM.H"
@@ -13,9 +14,9 @@ enum { Background = 3, BlockColor = 3, ClueColor = 2, GridColor = 1,
 
 struct ThemeColor { unsigned char index, red, green, blue; };
 static const ThemeColor theme[] = {
-    {0,50,50,37}, {1,33,25,25}, {2,16,12,12}, {3,8,8,8},
-    {4,55,53,42}, {5,43,36,31}, {6,63,52,28},
-    {7,23,17,14}, {8,53,40,35}
+    {0,57,53,36}, {1,35,21,19}, {2,14,9,8}, {3,5,5,6},
+    {4,59,56,43}, {5,44,31,24}, {6,63,48,16},
+    {7,24,14,9}, {8,58,35,33}
 };
 
 static void applyTheme(VgaScreen &screen, int dimmed)
@@ -27,7 +28,7 @@ static void applyTheme(VgaScreen &screen, int dimmed)
     }
 }
 
-Game::Game(VgaScreen &display) : screen(display), sound(0), cursorRow(-1), cursorColumn(-1),
+Game::Game(VgaScreen &display) : screen(display), sound(0), mouseAvailable(0), cursorRow(-1), cursorColumn(-1),
                                 boardX(0), boardY(0), cellSize(0), state(Playing)
 {
     puzzleName[0] = 0;
@@ -59,15 +60,27 @@ int Game::loadPuzzle(const char *filename)
 
 int Game::handleKey(int key)
 {
-    if (key == 27) { if(sound)sound->playEffect(Sound::Back); return 0; }
+    if(SoundMenu::toggleKey(sound,key)) {
+        if(cellSize>0) {
+            SoundMenu::drawButtons(screen,sound,8);
+            screen.setDrawingScale(2);
+        }
+        return 1;
+    }
     if (state == Congratulations) {
         if (key == 13) {
+            state = Completed;
+            if(sound)sound->playEffect(Sound::Back);
+            return 0;
+        }
+        if (key == 27) {
             state = Completed;
             if(sound)sound->playEffect(Sound::Select);
             if (cellSize > 0) draw();
         }
         return 1;
     }
+    if (key == 27) { if(sound)sound->playEffect(Sound::Back); return 0; }
     if (state == Completed) return 1;
     if (cursorRow < 0 || cursorColumn < 0) return 1;
     int oldRow = cursorRow, oldColumn = cursorColumn;
@@ -171,11 +184,14 @@ void Game::draw()
                     board.rows() * size + 7, ClueColor);
 
     drawHeader();
+    SoundMenu::drawButtons(screen,sound,8);
+    screen.setDrawingScale(2);
     for (int row = 0; row < board.rows(); ++row)
         for (int col = 0; col < board.columns(); ++col)
             drawCell(left + col * size, top + row * size, size, *board.cell(row, col));
     screen.drawGrid(left, top, board.columns(), board.rows(), size, GridColor);
     drawSelector();
+    if(mouseAvailable)drawMouseControls();
     if (state == Congratulations) drawCompletionModal();
 }
 
@@ -227,10 +243,10 @@ void Game::drawCompletionModal()
 {
     // Dim the board through its palette, preserving every underlying pixel.
     applyTheme(screen, 1);
-    screen.setPaletteColor(PanelColor, 16, 12, 12);
-    screen.setPaletteColor(GoldColor, 63, 52, 28);
-    screen.setPaletteColor(ModalTextColor, 55, 53, 42);
-    screen.setPaletteColor(ButtonColor, 33, 25, 25);
+    screen.setPaletteColor(PanelColor, 14, 9, 8);
+    screen.setPaletteColor(GoldColor, 63, 48, 16);
+    screen.setPaletteColor(ModalTextColor, 59, 56, 43);
+    screen.setPaletteColor(ButtonColor, 35, 21, 19);
     screen.setPaletteColor(ShadowColor, 4, 4, 4);
     screen.fillRect(32, 60, 264, 132, ShadowColor);
     screen.fillRect(28, 56, 264, 132, GoldColor);
@@ -242,7 +258,88 @@ void Game::drawCompletionModal()
     ProFont::drawCentered(screen, 128, 142, 384, 40, "WELL DONE!", GoldColor, 2);
     ProFont::drawCentered(screen, 64, 200, 512, 28, "Congratulations!", ModalTextColor);
     ProFont::drawCentered(screen, 64, 240, 512, 28, "You solved this Kakuro.", ModalTextColor);
-    ProFont::drawCentered(screen, 144, 290, 352, 44, "Enter: view board", ModalTextColor);
-    ProFont::drawCentered(screen, 64, 344, 512, 24, "Esc: menu", ModalTextColor);
+    ProFont::drawCentered(screen, 144, 290, 352, 44, "Enter: overview", ModalTextColor);
+    ProFont::drawCentered(screen, 64, 344, 512, 24, "Esc: view board", ModalTextColor);
     screen.setDrawingScale(2);
+}
+
+void Game::drawMouseControls()
+{
+    screen.setDrawingScale(1);
+    screen.fillRect(8,448,96,24,GridColor);
+    screen.fillRect(9,449,94,22,TextColor);
+    screen.drawText(24,456,"BACK Esc",ClueColor);
+    for(int digit=1;digit<=10;++digit) {
+        int x=digit<=9 ? 148+(digit-1)*30 : 424;
+        int width=digit<=9 ? 24 : 56;
+        screen.fillRect(x,448,width,24,GridColor);
+        screen.fillRect(x+1,449,width-2,22,TextColor);
+        char label[2]={(char)('0'+digit),0};
+        screen.drawText(x+8,456,digit<=9 ? label : "CLEAR",ClueColor);
+    }
+    screen.setDrawingScale(2);
+}
+
+int Game::handleMouse(int x,int y,int button)
+{
+    if(button!=1 && button!=2)return KeepPlaying;
+    if(button==1) {
+        int key=SoundMenu::buttonKey(x,y,8);
+        if(key==0x13F)return AudioSettings;
+        if(key)return handleKey(key);
+    }
+    if(state==Congratulations) {
+        if(button==2)return handleKey(27);
+        if(x>=144 && x<496 && y>=290 && y<334)return handleKey(13);
+        if(x>=64 && x<576 && y>=344 && y<368)return handleKey(27);
+        return KeepPlaying;
+    }
+    if(button==2)return handleKey(27);
+    if(mouseAvailable && y>=448 && y<472) {
+        if(x>=8 && x<104)return handleKey(27);
+        if(state!=Playing)return KeepPlaying;
+        for(int digit=1;digit<=9;++digit)
+            if(x>=148+(digit-1)*30 && x<172+(digit-1)*30)return handleKey('0'+digit);
+        if(x>=424 && x<480)return handleKey('0');
+    }
+    if(state!=Playing || cellSize<=0)return KeepPlaying;
+    int left=boardX*2,top=boardY*2,size=cellSize*2;
+    if(x<left || y<top || x>=left+board.columns()*size || y>=top+board.rows()*size)
+        return KeepPlaying;
+    int row=(y-top)/size,column=(x-left)/size;
+    const Puzzle::Cell *cell=board.cell(row,column);
+    if(!cell || cell->type!=Puzzle::Answer || cell->locked)return KeepPlaying;
+    screen.setDrawingScale(2);
+    screen.drawGrid(boardX+cursorColumn*cellSize,boardY+cursorRow*cellSize,1,1,cellSize,GridColor);
+    cursorRow=row;cursorColumn=column;drawSelector();
+    if(sound)sound->playEffect(Sound::Click);
+    return KeepPlaying;
+}
+
+HoverRect Game::hoverAt(int x,int y) const
+{
+    if(sound && SoundMenu::buttonKey(x,y,8))
+        return SoundMenu::buttonHover(x,y,8,state==Congratulations ? 1 : 0);
+    if(state==Congratulations) {
+        if(x>=144 && x<496 && y>=290 && y<334)return HoverRect(144,290,352,44,1);
+        if(x>=64 && x<576 && y>=344 && y<368)return HoverRect(64,344,512,24,1);
+        return HoverRect();
+    }
+    if(mouseAvailable && y>=448 && y<472) {
+        if(x>=8 && x<104)return HoverRect(8,448,96,24);
+        if(state!=Playing)return HoverRect();
+        for(int digit=1;digit<=9;++digit)
+            if(x>=148+(digit-1)*30 && x<172+(digit-1)*30)
+                return HoverRect(148+(digit-1)*30,448,24,24);
+        if(x>=424 && x<480)return HoverRect(424,448,56,24);
+    }
+    if(state!=Playing || cellSize<=0)return HoverRect();
+    int left=boardX*2,top=boardY*2,size=cellSize*2;
+    if(x<left || y<top || x>=left+board.columns()*size || y>=top+board.rows()*size)
+        return HoverRect();
+    int row=(y-top)/size,column=(x-left)/size;
+    const Puzzle::Cell *cell=board.cell(row,column);
+    if(cell && cell->type==Puzzle::Answer && !cell->locked)
+        return HoverRect(left+column*size,top+row*size,size,size);
+    return HoverRect();
 }

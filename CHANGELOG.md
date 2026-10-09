@@ -3,9 +3,16 @@
 Changes are grouped by the source version in `VERSION`. GitHub releases are
 published when a tag is pushed; release notes use the matching version below.
 
-## [Unreleased]
+## [0.2.0]
 
 ### Changed
+
+- Use a halfway blend of the original and saturated VGA palettes across the courtyard, journal,
+  puzzle and dialogs for hardware displays.
+- Add small speaker and music-note buttons in the journal and puzzle.
+  F3/E toggles effects, F4/M toggles music; F5 opens hardware settings.
+- Return to the puzzle overview with Enter after solving; Escape views the board.
+- Include a 32×32 EGA Quickmenu icon with transparency as KAKURO.ICC.
 
 - Ship only the 96 numbered puzzles, excluding the extra XXX board from the
   catalog and archive; fix Linux CI tests that expected that extra board.
@@ -17,6 +24,16 @@ published when a tag is pushed; release notes use the matching version below.
   worked sum example, controls, technical notes and links to the implementation.
 
 ### Added
+
+- Dark hover backgrounds with light labels for clickable buttons, cards and
+  editable puzzle cells, preserving original pixels and keyboard selection.
+
+- Optional DOS mouse controls for puzzles, journal, dialogs and audio buttons.
+  Mouse users can select cells and enter digits using an on-screen keypad.
+- A cog button for the F5 hardware settings in the journal and puzzle.
+
+- Three additional puzzle music arrangements from chipscore for FM and General
+  MIDI. Puzzle IDs cycle through four tracks, retaining music preferences.
 
 - README badges for GitHub Actions, version and GPLv3; explicit project and
   asset licensing, third-party notices and editable audio sources.

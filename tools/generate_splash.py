@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert the CX16 packed 2bpp courtyard into two VGA bit planes and DAC RGB."""
+"""Convert the CX16 courtyard pixels into VGA planes with a richer DAC palette."""
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -19,12 +19,8 @@ def main():
             for plane in range(2):
                 if color & (1 << plane):
                     planes[plane][x // 8] |= 0x80 >> (x & 7)
-    rgb = bytearray()
-    for i in range(4):
-        gb, r = palette[i * 2:i * 2 + 2]
-        if r > 15:
-            raise ValueError('Invalid CX16 palette component')
-        rgb.extend(component * 63 // 15 for component in (r, gb >> 4, gb & 15))
+    # Keep the source pixels; use a richer warm palette for VGA/CRT displays.
+    rgb = bytes((57,53,36, 35,21,19, 14,9,8, 5,5,6))
     (ASSETS / 'START.VGA').write_bytes(planes[0] + planes[1])
     (ASSETS / 'START.PAL').write_bytes(rgb)
 

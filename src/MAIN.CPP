@@ -7,24 +7,47 @@
 #include "MENU.H"
 #include "DOCVIEW.H"
 #include "SOUNDMNU.H"
+#include "MOUSE.H"
 
 unsigned _stklen = 16384;
 
-static int readKey(Sound &sound)
+struct Input { int key, x, y, button, motion; };
+
+static Input readInput(Sound &sound,Mouse &mouse,Hover &hover)
 {
-    // Service the MIDI UART between ticks without blocking in BIOS getch.
-    sound.service();
-    while(!kbhit())sound.service();
-    int key=getch();
-    if(key==0 || key==0xE0)key=0x100 | getch();
-    return key;
+    Input input={0,0,0,0,0};
+    // Show only while waiting. Every caller draws with the cursor hidden,
+    // so a driver's saved cursor background cannot overwrite our VGA pixels.
+    mouse.show();
+    for(;;) {
+        sound.service();
+        if(kbhit()) {
+            input.key=getch();
+            if(input.key==0 || input.key==0xE0)input.key=0x100 | getch();
+            // Keep button edges current even while typing.
+            mouse.poll(input.x,input.y);
+            break;
+        }
+        int event=mouse.poll(input.x,input.y);
+        if(event==Mouse::Motion) { input.motion=1;break; }
+        if(event) { input.button=event;break; }
+    }
+    mouse.hide();
+    if(!input.motion) { hover.clear();mouse.refreshPosition(); }
+    return input;
 }
 
-static void soundPanel(VgaScreen &screen,Sound &sound)
+static void soundPanel(VgaScreen &screen,Sound &sound,Mouse &mouse,Hover &hover)
 {
     SoundMenu panel(screen,sound);
     panel.draw();
-    while(panel.handleKey(readKey(sound))) {}
+    int running=1;
+    while(running) {
+        Input input=readInput(sound,mouse,hover);
+        if(input.motion) { hover.update(panel.hoverAt(input.x,input.y));continue; }
+        running=input.button ? panel.handleMouse(input.x,input.y,input.button)
+                             : panel.handleKey(input.key);
+    }
 }
 
 int main(int argc, char **argv)
@@ -45,30 +68,38 @@ int main(int argc, char **argv)
         fprintf(stderr, "Cannot load the start screen from KAKURO.DAT\n");
         return 1;
     }
+    Mouse mouse;
+    mouse.initialize();
+    Hover hover(screen);
+    game.setMouseAvailable(mouse.available());
     sound.initialize();
     sound.playMusic(Sound::MenuMusic);
     // Discard keys buffered during startup, matching the CX16 splash.
     while (kbhit()) getch();
     int choice = 0;
     while (!choice) {
-        int key = readKey(sound);
-        choice = start.handleKey(key);
+        Input input=readInput(sound,mouse,hover);
+        if(input.motion)continue;
+        choice=start.handleKey(input.button ? (input.button==1 ? 13 : 27) : input.key);
     }
     if (choice < 0) return 0;
     MenuScreen menu(screen);
+    menu.setSound(&sound);
     menu.loadCatalog(filename);
     menu.draw();
     int currentPuzzle = -1;
     for (;;) {
-        int key = readKey(sound);
+        Input input=readInput(sound,mouse,hover);
+        if(input.motion) { hover.update(menu.hoverAt(input.x,input.y));continue; }
         int oldSelection=menu.selectedIndex(),oldPage=menu.pageNumber();
-        int action = menu.handleKey(key);
+        int action=input.button ? menu.handleMouse(input.x,input.y,input.button)
+                                : menu.handleKey(input.key);
         if (action == MenuScreen::Exit) break;
         if(menu.selectedIndex()!=oldSelection)
             sound.playEffect(menu.pageNumber()!=oldPage ? Sound::Page : Sound::Click);
         if(action == MenuScreen::Audio) {
             sound.playEffect(Sound::Select);
-            soundPanel(screen,sound);
+            soundPanel(screen,sound,mouse,hover);
             menu.draw();
             continue;
         }
@@ -78,8 +109,10 @@ int main(int argc, char **argv)
             document.show(action == MenuScreen::Help ? DocumentScreen::Help : DocumentScreen::About);
             int reading=1;
             while(reading) {
-                key=readKey(sound);
-                reading=document.handleKey(key);
+                input=readInput(sound,mouse,hover);
+                if(input.motion) { hover.update(document.hoverAt(input.x,input.y));continue; }
+                reading=input.button ? document.handleMouse(input.x,input.y,input.button)
+                                     : document.handleKey(input.key);
             }
             sound.playEffect(Sound::Back);
             menu.draw();
@@ -95,18 +128,22 @@ int main(int argc, char **argv)
             currentPuzzle = selected;
         }
         menu.markPlayed(selected, game.isCompleted());
-        sound.playMusic(Sound::GameMusic);
+        sound.playPuzzleMusic(menu.entry(selected)->id);
         sound.playEffect(game.completionModalVisible() ? Sound::Solved : Sound::Select);
         game.draw();
         int running = 1;
         while (running) {
-            key = readKey(sound);
-            if(key==0x13D) {
-                soundPanel(screen,sound);
+            input=readInput(sound,mouse,hover);
+            if(input.motion) { hover.update(game.hoverAt(input.x,input.y));continue; }
+            int action=input.button ? game.handleMouse(input.x,input.y,input.button)
+                                    : input.key==0x13F ? Game::AudioSettings
+                                    : game.handleKey(input.key);
+            if(action==Game::AudioSettings) {
+                soundPanel(screen,sound,mouse,hover);
                 game.draw();
                 continue;
             }
-            running = game.handleKey(key);
+            running=action;
         }
         menu.markPlayed(selected, game.isCompleted());
         sound.playMusic(Sound::MenuMusic);

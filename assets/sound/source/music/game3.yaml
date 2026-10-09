@@ -1,0 +1,52 @@
+type: song
+title: Stone Garden (in game 3)
+description: >
+  Meditative alternative puzzle music. D in scale / miyako-bushi (D Eb G A Bb):
+  long sho clusters over a low D drone, short koto phrases answered by the
+  shakuhachi in the empty bars, a soft mokugyo knock every two bars, rare chimes.
+  Very sparse on purpose: it should sit behind the player's thinking.
+instruments: ../instruments.yaml
+tempo: 60            # quarter = 60 ticks
+meter: 4/4
+budget: 40960
+
+parts:
+  # opl: overrides for the OPL2 target (9 FM channels: no room for the echo)
+  pad:   {instrument: sho, voices: [0, 1, 2], level: 0.9}
+  koto:  {instrument: koto, voices: [3, 4], ring: true, level: 0.6}
+  perc:  {voices: [5], level: 0.5, kit: {wb: {instrument: woodblock, note: D5}}}
+  flute: {instrument: shakuhachi, voices: [6], level: 0.7,
+          echo: {voice: 7, delay: "8.", level: 0.3, pan: R}, opl: {echo: null}}
+  chime: {instrument: chime, voices: [8], pan: L, level: 0.7, opl: {voices: [7]}}
+  bass:  {instrument: bass, voices: [9], level: 0.6, opl: {voices: [8]}}
+
+patterns:
+  X: "[D4 G4 A4]/1"
+  Y: "[Eb4 G4 Bb4]/1"
+  Z: "[D4 A4 Bb4]/1"
+  W: "[G3 D4 A4]/1"
+  knock: "| wb/4 r/2. | r/1 | wb/4 r/2. | r/1 | wb/4 r/2. | r/1 | wb/4 r/2. | r/1 |"
+
+sections:
+  A:
+    pad:   "| @X | -/1 | @Y | -/1 | @W | -/1 | @Z | @X |"
+    koto:  "| D4/8 A4 Bb4 r/8 A4/4 r/4 | r/1 | G4/8 Bb4 D5 r/8 Eb5/4 D5/4 | r/1
+            | A4/8 D5 Eb5 r/8 D5/4 A4/4 | r/1 | Bb4/8 A4 G4 r/8 D4/2 | r/1 |"
+    flute: "| r/1 | r/4 A4/2^ r/4 | r/1 | r/4 D5/4^ Eb5/4 D5/4
+            | r/1 | r/4 G5/2^ A5/4 | r/1 | D5/2. r/4 |"
+    perc:  "@knock"
+    chime: "| r/1 | r/1 | r/2 A6/4 r/4 | r/1 | r/1 | r/1 | r/4 D6/4 r/2 | r/1 |"
+    bass:  "| D2/1 | -/1 | Eb2/1 | -/1 | G2/1 | -/1 | D2/1 | -/1 |"
+
+  B:
+    pad:   "| @Y | -/1 | @X | -/1 | @Z | -/1 | @W | @X |"
+    koto:  "| A4/8 D5 G5 r/8 A5/4 r/4 | r/1 | Bb5/8 A5 G5 r/8 D5/4 Eb5/4 | r/1
+            | D5/8 A4 G4 r/8 A4/4 Bb4/4 | r/1 | A4/8 G4 Eb4 r/8 D4/2 | r/1 |"
+    flute: "| r/1 | A5/2.^ G5/4 | r/1 | Eb5/4 D5/4 A4/2
+            | r/1 | G5/4 A5/4 Bb5/2^ | r/1 | A5/2. r/4 |"
+    perc:  "@knock"
+    chime: "| r/1 | r/2 Eb6/4 r/4 | r/1 | r/1 | r/1 | r/4 Bb6/4 r/2 | r/1 | r/1 |"
+    bass:  "| Eb2/1 | -/1 | D2/1 | -/1 | D2/1 | -/1 | G2/1 | D2/1 |"
+
+arrangement: [A, B, A, B]
+loop: A

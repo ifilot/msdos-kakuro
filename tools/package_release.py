@@ -20,6 +20,7 @@ def main():
                        ('PROFONT.TXT', 'assets/fonts/PROFONT-LICENSE.txt'),
                        ('FONTS.TXT', 'assets/fonts/internet/README.md')):
         shutil.copyfile(ROOT / path, destination / name)
+    shutil.copyfile(ROOT / 'assets/quickmenu/KAKURO.ICC', destination / 'KAKURO.ICC')
     version = (ROOT / 'VERSION').read_text().strip()
     (destination / 'README.TXT').write_bytes(
         ('Version ' + version + '\r\n').encode('ascii') +
@@ -29,12 +30,18 @@ def main():
         b'Run KAKURO from this directory. Keep KAKURO.DAT and PUZZLES.DAT beside it.\r\n'
         b'Enter opens the journal. Arrows select, PgUp/PgDn change pages.\r\n'
         b'F1 opens Help; F2 opens About. Arrows/PgUp/PgDn scroll.\r\n'
-        b'F3 opens sound settings in the journal or puzzle.\r\n'
+        b'Speaker F3/E toggles effects; music note F4/M toggles music.\r\n'
+        b'Buttons work in journal and puzzle. Cog/F5 opens hardware settings.\r\n'
+        b'With a DOS mouse driver: click cards, buttons and answer cells.\r\n'
+        b'Click digit/Clear buttons to enter numbers; Back returns to journal.\r\n'
+        b'Right-click acts as Esc. Mouse support is optional.\r\n'
         b'Keep SOUND.DAT beside KAKURO.EXE. Sound settings save to SOUND.CFG.\r\n'
         b'AdLib / Sound Blaster FM / MPU-401 General MIDI; no PC speaker.\r\n'
         b'MPU-401 requires a connected General MIDI synthesizer.\r\n'
         b'Enter plays; 1-9 enter digits, Backspace/Delete/0 clear.\r\n'
+        b'When solved: Enter returns to overview; Esc views the board.\r\n'
         b'Esc returns to the journal; Esc there exits.\r\n'
+        b'Quickmenu: import KAKURO.ICC in its icon editor for your shortcut.\r\n'
         b'Entries and status marks last for this session only.\r\n')
     archive = ROOT / 'build/KAKURO.ZIP'
     with ZipFile(archive, 'w', ZIP_DEFLATED) as bundle:
