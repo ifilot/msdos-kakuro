@@ -28,7 +28,7 @@ Press Escape during a puzzle to return to selection. Reopening the current puzzl
 Played and solved marks last for this session. Closing the application clears your entries and these marks.
 
 # Choosing a puzzle
-The journal contains 96 numbered puzzles and one extra puzzle, marked xxx. There are 24 cards per page. Each card shows its number and board size.
+The journal contains 96 numbered puzzles. There are 24 cards per page. Each card shows its number and board size.
 
 Use arrows to select a card and Enter to play. Page Up and Page Down, or [ and ], change pages. Home and End select the first and last card on a page.
 

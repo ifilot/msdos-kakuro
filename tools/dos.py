@@ -203,8 +203,8 @@ def main():
     parser.add_argument("--fonts", action="store_true")
     args = parser.parse_args()
     action = args.action
-    if not re.fullmatch(r"[0-9]{3}|xxx", args.puzzle, re.IGNORECASE):
-        parser.error("Puzzle must be a three-digit ID or xxx")
+    if not re.fullmatch(r"[0-9]{3}", args.puzzle):
+        parser.error("Puzzle must be a three-digit ID")
     if action == "run" and not args.fonts:
         path = ROOT / "assets/puzzles" / (args.puzzle.lower() + ".puz")
         if not path.is_file() or not path.stat().st_size:

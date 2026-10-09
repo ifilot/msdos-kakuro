@@ -4,12 +4,26 @@
 [![Version](https://img.shields.io/badge/version-v0.1.0-blue)](VERSION)
 [![License: GPLv3](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
 
-A Kakuro game for MS-DOS with 97 puzzles, a courtyard setting, and
+A Kakuro game for MS-DOS with 96 puzzles, a courtyard setting, and
 640×480 VGA graphics in 16 colors.
 
-[Play in your browser](https://ifilot.github.io/msdos-kakuro/) ·
-[Download the DOS edition](https://github.com/ifilot/msdos-kakuro/releases) ·
-[Changelog](CHANGELOG.md)
+* [Play in your browser](https://ifilot.github.io/msdos-kakuro/)
+* [Download the DOS edition](https://github.com/ifilot/msdos-kakuro/releases)
+* [Changelog](CHANGELOG.md)
+
+## Screenshots
+
+The courtyard start screen.
+
+![Courtyard start screen with the Kakuro title and Enter prompt](img/start-screen.png)
+
+The puzzle journal, with board sizes and blossom difficulty indicators.
+
+![Puzzle journal showing selectable puzzles and their difficulty](img/puzzle-journal.png)
+
+A puzzle in progress, with sum clues, fixed hints and entered digits.
+
+![Kakuro game board with several entered digits and the selected cell highlighted](img/gameplay.png)
 
 ## Getting started
 

@@ -26,7 +26,7 @@ exposed artwork.
 
 ## Startup and disk reads
 
-The menu's compiled catalog is 97 records of four bytes (388 bytes). It replaces
+The menu's compiled catalog is 96 records of four bytes (384 bytes). It replaces
 101 file opens, puzzle parsing, and clue derivation at startup. A puzzle is read
 only when selected for play. Main also avoids loading the default puzzle before
 the splash and then loading it again on Enter. Missing or corrupt archive entries are reported when selected;
@@ -44,7 +44,7 @@ instructions and font license. Fonts and catalog metadata are compiled in;
 large artwork stays outside the EXE so DOS need not load all of it into the
 program's conventional memory. `make release` builds `build/KAKURO.ZIP` and an
 unpacked `build/release` directory. Source PNGs, loose VGA files, and individual
-puzzle files are omitted. The puzzle archive is 5,822 bytes; cells use five-bit
+puzzle files are omitted. The puzzle archive is 5,756 bytes; cells use five-bit
 codes plus optional byte RLE, with a direct index and per-board checksum.
 Selecting a puzzle reads a single small record instead of opening a separate
 file. Help uses the existing book image; its text is compiled and scrolling updates
@@ -74,7 +74,7 @@ and VGA transfers; steady gameplay and full menu page changes avoid image I/O.
 
 Functional checks execute with the 8086 instruction set at fixed 30,000 emulator
 cycles: VGA byte comparisons and edge masks; glyph transparency, clipping, and
-scaling; all splash pixels and palette values; catalog metadata against all 97
+scaling; all splash pixels and palette values; catalog metadata against all 96
 puzzle files; fast menu page pixels against full repaint; gameplay input and
 completion; and packed image bytes, chunk boundaries, and malformed streams.
 Host tests also exercise the actual C++ resource decoder across eight chunk

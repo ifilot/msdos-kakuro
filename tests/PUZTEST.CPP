@@ -104,6 +104,7 @@ int main()
           && puzzle.cell(1, 0)->across == 3 && puzzle.cell(2, 0)->across == 7,
           "Small-board clues at edges");
     check(puzzle.load("FIXTURES\\SINGLE.PUZ"), "Isolated cell fixture");
+    check(puzzle.difficulty() == 0, "Unknown metadata");
     check(puzzle.cell(0, 2)->type == Puzzle::Blocked,
           "Clue runs do not wrap between rows or include a single cell");
     puzzle.setValue(0, 1, 1); puzzle.setValue(1, 0, 2); puzzle.setValue(1, 2, 3);
@@ -136,8 +137,6 @@ int main()
                   "Puzzle 031 corrected across and down clues");
         }
     }
-    check(puzzle.load("PUZZLES\\XXX.PUZ"), "Extra source puzzle");
-    check(puzzle.rows() == 9 && puzzle.difficulty() == 0, "Unknown metadata");
 
     VgaScreen screen;
     Game game(screen);

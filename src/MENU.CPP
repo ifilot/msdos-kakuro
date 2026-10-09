@@ -23,7 +23,6 @@ static const char *basename(const char *name)
 
 static void puzzleNumber(char *text, unsigned int id)
 {
-    if (!id) { strcpy(text, "xxx"); return; }
     text[0] = '0' + id / 100;
     text[1] = '0' + (id / 10) % 10;
     text[2] = '0' + id % 10;
@@ -48,13 +47,10 @@ int MenuScreen::loadCatalog(const char *preferred)
         const CatalogRecord &record = puzzleCatalog[index];
         unsigned int id = record.id;
         char filename[20];
-        if (!id) strcpy(filename, "PUZZLES\\XXX.PUZ");
-        else {
-            strcpy(filename, "PUZZLES\\000.PUZ");
-            char number[4];
-            puzzleNumber(number, id);
-            memcpy(filename + 8, number, 3);
-        }
+        strcpy(filename, "PUZZLES\\000.PUZ");
+        char number[4];
+        puzzleNumber(number, id);
+        memcpy(filename + 8, number, 3);
         Entry &item = entries[puzzleCount];
         strcpy(item.filename, filename);
         item.rows = record.rows; item.columns = record.columns;

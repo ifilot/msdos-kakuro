@@ -116,7 +116,7 @@ Run from that directory. You can also
 preselect a packed puzzle with its familiar identifier, for example
 `KAKURO.EXE PUZZLES\050.PUZ`.
 
-`make test-puzzle` loads all 97 archived puzzles and checks invalid-file
+`make test-puzzle` loads all 96 archived puzzles and checks invalid-file
 handling, clue sums, initial hints/locks, and puzzle rendering without exposing
 unrevealed answers. It also checks selector movement, board boundaries, number
 entry/replacement, clearing, and protection of locked cells. Logs and a rendered board's pixel/palette dumps are in

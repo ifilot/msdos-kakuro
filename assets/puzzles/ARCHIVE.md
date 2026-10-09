@@ -3,8 +3,8 @@
 `python3 tools/pack_puzzles.py` generates the compressed archive from the
 original `.puz` development sources. The application and release ship only
 `PUZZLES.DAT`, never a directory of individual puzzle files. The current
-archive contains 96 numbered puzzles plus XXX in 5,822 bytes, 57.1% smaller
-than the 13,585-byte source collection before filesystem overhead.
+archive contains 96 numbered puzzles in 5,756 bytes, 57.0% smaller
+than the 13,399-byte numbered source collection before filesystem overhead.
 
 Each board retains dimensions, difficulty, source metadata, answer digits,
 and given-cell flags. Five-bit cell codes encode blocked cells (0), hidden
@@ -22,7 +22,7 @@ preserve the previous board.
 ## Format
 
 All integers are little endian. The eight-byte magic `KAKPUZ1\0` is followed
-by a two-byte slot count, currently 101. Slot 0 is XXX; slots 1–100 are numbered
+by a two-byte slot count, currently 101. Slot 0 is reserved and empty; slots 1–100 are numbered
 IDs. Each nine-byte directory entry stores:
 
 | Field | Bytes |
@@ -40,7 +40,8 @@ zero. Offsets keep the archive within 64 KB. Empty source placeholders 097–100
 have absent entries and are excluded from the menu.
 
 `Puzzle::loadPacked(id)` loads an archive entry. Familiar identifiers such as
-`001.PUZ`, `PUZZLES\001.PUZ`, and `XXX.PUZ` also select archive entries.
+`001.PUZ` and `PUZZLES\001.PUZ` also select archive entries.
+`XXX.PUZ` does not select a shipped puzzle.
 Explicit custom paths such as `CUSTOM\BOARD.PUZ` still use the text loader for
 development. Rebuild after editing source boards to refresh both the compiled
 menu catalog and the archive.

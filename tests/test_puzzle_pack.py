@@ -42,12 +42,12 @@ class ArchiveTests(unittest.TestCase):
         if source:command.append(str(source))
         return subprocess.run(command).returncode
     def test_every_field_of_every_puzzle(self):
-        for id in range(97):
-            name=f'{id:03d}' if id else 'XXX'
+        for id in range(1,97):
+            name=f'{id:03d}'
             with self.subTest(id=id):
                 self.assertEqual(self.run_loader(self.data,id,ROOT/'assets/puzzles'/f'{name}.puz'),0)
     def test_missing_ids(self):
-        for id in (97,98,99,100,101):self.assertEqual(self.run_loader(self.data,id),2)
+        for id in (0,97,98,99,100,101):self.assertEqual(self.run_loader(self.data,id),2)
     def test_invalid_index_and_bounds(self):
         for location,value in ((0,0),(8,0),(10+9+6,2)):
             data=bytearray(self.data);data[location]=value

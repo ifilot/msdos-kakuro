@@ -31,7 +31,7 @@ make release
 `make run` rebuilds and opens a visible DOSBox-X/DOSBox window. The runner uses
 a native emulator when available, otherwise the `kakuro-build` Docker image
 with WSLg/X11 display forwarding. Host audio is enabled, including
-WSLg/PulseAudio in Docker. `PUZZLE` preselects a three-digit puzzle ID or `xxx`
+WSLg/PulseAudio in Docker. `PUZZLE` preselects a three-digit puzzle ID
 in the journal; the default is `001`.
 
 `make release` produces `build/KAKURO.ZIP` with the executable,
@@ -75,8 +75,8 @@ reloading the artwork. See [performance measurements and limits](PERFORMANCE.md)
 ## Assets and puzzles
 
 The copied [puzzle sources](../assets/puzzles/README.md) retain their CX16
-format. The collection contains 96 numbered puzzles plus one extra puzzle;
-097–100 are empty source placeholders and are excluded from the journal.
+format. The distribution contains 96 numbered puzzles. The extra `xxx.puz` source
+board and empty placeholders 097–100 are excluded from the journal and archive.
 Rebuild after editing boards or metadata to refresh both the catalog and archive.
 
 ```sh
@@ -111,7 +111,7 @@ emulator process with a newer CPU. Host checks also validate the asset formats.
 | `make test-menu` | Catalog, pagination, selection, status and active-board return. |
 | `make test-fonts` | Prototype font placement in VGA memory. |
 | `make test-assets` | Image pack decoding and malformed input on host and DOS. |
-| `make test-archive` | All 97 archived boards against their sources and corrupt input. |
+| `make test-archive` | All 96 archived boards against their sources and corrupt input. |
 | `make test-documents` | Help/About navigation and return to the journal. |
 | `make test-sound` | Host audio streams and DOS hardware/timer integration. |
 | `make test-perf` | BIOS tick measurements in `build/perf-test/PERFORM.TXT`. |

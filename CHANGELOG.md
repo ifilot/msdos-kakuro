@@ -7,6 +7,9 @@ published when a tag is pushed; release notes use the matching version below.
 
 ### Changed
 
+- Ship only the 96 numbered puzzles, excluding the extra XXX board from the
+  catalog and archive; fix Linux CI tests that expected that extra board.
+
 - Simplified the README around installation, rules and controls; moved build,
   test and implementation details into a dedicated developer guide.
 

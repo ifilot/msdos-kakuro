@@ -19,7 +19,8 @@ python3 tools/generate_menu.py
 ```
 
 Regular builds use the committed VGA bitmap and do not require Pillow.
-The build generates a 388-byte compiled catalog, excluding empty placeholders.
+The build generates a 384-byte compiled catalog for 96 numbered puzzles, excluding the extra
+XXX board and empty placeholders.
 The menu reads this catalog without opening puzzle files. Rebuild after
 editing puzzle metadata; a missing archive entry is reported when selected.
 Played/solved markers are kept for the current session. Only the current

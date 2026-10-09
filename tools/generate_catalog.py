@@ -34,8 +34,8 @@ def metadata(path):
 
 def main():
     entries = []
-    for identifier in list(range(1, 101)) + [0]:
-        name = f'{identifier:03d}' if identifier else 'XXX'
+    for identifier in range(1, 101):
+        name = f'{identifier:03d}'
         path = ROOT / 'assets/puzzles' / (name + '.puz')
         if not path.exists():
             continue

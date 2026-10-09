@@ -8,7 +8,7 @@ from pack_assets import encode, decode
 ROOT = Path(__file__).resolve().parent.parent
 MAGIC = b'KAKPUZ1\0'
 ENTRY = struct.Struct('<HHHBH')
-SLOTS = 101  # XXX=0, numbered puzzles=1..100; zero offsets are empty slots.
+SLOTS = 101  # slot 0 reserved, numbered puzzles=1..100; zero offsets are empty slots.
 
 
 def record(path):
@@ -50,8 +50,8 @@ def main():
     payload = bytearray()
     offset = len(MAGIC) + 2 + len(directory)
     count = source_size = 0
-    for identifier in range(SLOTS):
-        name = f'{identifier:03d}' if identifier else 'XXX'
+    for identifier in range(1, SLOTS):
+        name = f'{identifier:03d}'
         path = ROOT / 'assets/puzzles' / (name + '.puz')
         if not path.exists():
             continue

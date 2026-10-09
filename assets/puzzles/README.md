@@ -7,7 +7,8 @@ application, at the author's request. All `.puz` files except the corrected
 are retained. `SHA256SUMS` records their current contents.
 
 `001.puz` through `096.puz` contain the 96 numbered puzzles. `xxx.puz` is an
-additional 9×9 board with unknown source metadata. `097.puz` through `100.puz`
+additional 9×9 development source with unknown metadata, excluded from the
+shipped catalog and archive. `097.puz` through `100.puz`
 are empty placeholders in the original application. Populated boards range
 from 6×6 to 10×10.
 

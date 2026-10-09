@@ -10,7 +10,7 @@ public:
     struct Entry {
         char filename[20];
         unsigned char rows, columns, difficulty, status;
-        unsigned int id; // zero identifies the extra XXX puzzle.
+        unsigned int id; // numbered puzzle identifier (1-100).
     };
     MenuScreen(VgaScreen &display);
     int loadCatalog(const char *preferred = "001.PUZ");

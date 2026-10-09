@@ -7,7 +7,7 @@ journal background, framed paper panels, ProFont headings, BIOS reading text,
 and a scroll bar. No new background images are required.
 
 Text is adapted to implemented DOS features: keyboard selection and entry,
-rule-based completion, 97 boards, session-only status, and compressed resources.
+rule-based completion, 96 boards, session-only status, and compressed resources.
 CX16-specific mouse, music, timer, and checking controls are omitted.
 
 Edit `HELP.TXT` here and run

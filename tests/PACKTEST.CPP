@@ -20,10 +20,9 @@ int main()
 {
     checks=fopen("CHECKS.TXT","w");if(!checks)return 2;
     Puzzle packed, loose;
-    for(int id=0;id<=96;++id){
+    for(int id=1;id<=96;++id){
         char filename[24];
-        if(!id)strcpy(filename,"SOURCE\\XXX.PUZ");
-        else sprintf(filename,"SOURCE\\%03d.PUZ",id);
+        sprintf(filename,"SOURCE\\%03d.PUZ",id);
         check(packed.loadPacked(id),"Packed puzzle loads without loose puzzle directory");
         check(loose.load(filename),"Source puzzle loads");
         check(packed.rows()==loose.rows() && packed.columns()==loose.columns()
@@ -34,11 +33,12 @@ int main()
                 check(a && !memcmp(a,b,sizeof(*b)),"Every solution, clue, hint, lock and initial value preserved");
                 if(a && !a->locked)packed.setValue(row,col,a->solution);
             }
-        if(id)check(packed.isSolved(),"Numbered packed source solution is valid");
+        check(packed.isSolved(),"Numbered packed source solution is valid");
     }
     check(packed.load("puzzles/001.puz"),"Legacy identifier resolves to archive");
     check(packed.load("001.PUZ"),"Bare identifier resolves to archive");
-    check(packed.load("xxx.puz") && packed.rows()==9,"Extra puzzle identifier");
+    check(!packed.load("xxx.puz"),"Extra puzzle excluded from archive");
+    check(!packed.loadPacked(0),"Reserved archive slot is empty");
     check(packed.loadPacked(1),"Prepare preservation test");
     for(int missing=97;missing<=101;++missing)
         check(!packed.loadPacked(missing) && packed.rows()==6 && packed.cell(1,1)->value==2,

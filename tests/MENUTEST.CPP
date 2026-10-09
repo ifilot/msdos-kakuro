@@ -29,10 +29,10 @@ int main()
     check(menu.handleKey(13) == MenuScreen::Wait, "Empty catalog cannot launch");
     check(menu.handleKey(27) == MenuScreen::Exit, "Escape exits empty menu");
     check(menu.loadCatalog("puzzles\\071.puz"), "Load catalog");
-    check(menu.count() == 97 && menu.pageCount() == 5, "Skip four empty placeholders");
+    check(menu.count() == 96 && menu.pageCount() == 4, "Only numbered playable puzzles");
     check(menu.selectedIndex() == 70 && menu.pageNumber() == 2, "Preferred puzzle selected");
-    check(menu.entry(70)->id == 71 && menu.entry(96)->id == 0, "Numbered and extra IDs");
-    check(!menu.entry(-1) && !menu.entry(97), "Bounds checked");
+    check(menu.entry(70)->id == 71 && menu.entry(95)->id == 96, "Numbered puzzle IDs");
+    check(!menu.entry(-1) && !menu.entry(96), "Bounds checked");
     // Only tests open the whole corpus: production uses its compact index.
     Puzzle catalogPuzzle;
     for (int record = 0; record < menu.count(); ++record) {
@@ -52,11 +52,11 @@ int main()
     menu.handleKey(0x14F);
     check(menu.selectedIndex() == 71, "End selects final card");
     menu.handleKey(']'); menu.handleKey(0x151);
-    check(menu.selectedIndex() == 96, "Last page clamps to populated card");
+    check(menu.selectedIndex() == 95, "Last page clamps to populated card");
     menu.handleKey(Game::Right); menu.handleKey(Game::Down); menu.handleKey(0x151);
-    check(menu.selectedIndex() == 96, "No selection of blank cards");
+    check(menu.selectedIndex() == 95, "No selection of blank cards");
     menu.handleKey('[');
-    check(menu.selectedIndex() == 72, "Previous page preserves slot");
+    check(menu.selectedIndex() == 71, "Previous page preserves slot");
     menu.loadCatalog("001.PUZ");
     screen.initialize(); menu.draw();
     check(pixel(100,112) == 6 && pixel(172,112) == 2, "Selected gold border and normal brown border");

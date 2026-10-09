@@ -97,7 +97,6 @@ static const CatalogRecord puzzleCatalog[] = {
     {94, 8, 8, 3},
     {95, 8, 8, 3},
     {96, 8, 8, 3},
-    {0, 9, 9, 0},
 };
 static const unsigned int puzzleCatalogCount =
     sizeof(puzzleCatalog) / sizeof(puzzleCatalog[0]);
