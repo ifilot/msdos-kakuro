@@ -1,0 +1,62 @@
+[
+  {
+    "number": 1,
+    "name": "Times Roman",
+    "file": "timR18.bdf",
+    "digit_height": 17
+  },
+  {
+    "number": 2,
+    "name": "New Century Schoolbook",
+    "file": "ncenR18.bdf",
+    "digit_height": 18
+  },
+  {
+    "number": 3,
+    "name": "Courier",
+    "file": "courR18.bdf",
+    "digit_height": 15
+  },
+  {
+    "number": 4,
+    "name": "Helvetica",
+    "file": "helvR18.bdf",
+    "digit_height": 18
+  },
+  {
+    "number": 5,
+    "name": "Lucida Sans",
+    "file": "luRS18.bdf",
+    "digit_height": 18
+  },
+  {
+    "number": 6,
+    "name": "Lucida Bright",
+    "file": "lubR18.bdf",
+    "digit_height": 18
+  },
+  {
+    "number": 7,
+    "name": "Spleen",
+    "file": "spleen-12x24.bdf",
+    "digit_height": 15
+  },
+  {
+    "number": 8,
+    "name": "ProFont",
+    "file": "profont22.bdf",
+    "digit_height": 14
+  },
+  {
+    "number": 9,
+    "name": "UW ttyp0",
+    "file": "t0-22-uni.bdf",
+    "digit_height": 13
+  },
+  {
+    "number": 10,
+    "name": "Terminus",
+    "file": "ter-u24n.bdf",
+    "digit_height": 15
+  }
+]
